@@ -1,0 +1,132 @@
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
+const jwt = require("jsonwebtoken");
+
+const registerUser = async (req, res) => {
+
+  try {
+
+    const { name, email, password, dateOfBirth } = req.body;
+
+    
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationUrl = `http://localhost:5000/api/auth/verify-email/${verificationToken}`;
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      dateOfBirth,
+      emailVerificationToken: verificationToken
+    });
+
+    await newUser.save();
+
+
+   await sendEmail(
+  email,
+  "Verify your Trackiva account",
+  `
+  <h2>Welcome to Trackiva</h2>
+  <p>Click the button below to verify your email:</p>
+
+  <a href="${verificationUrl}" 
+     style="background:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
+     Verify Email
+  </a>
+
+  <p>If the button does not work, copy this link:</p>
+
+  <p>${verificationUrl}</p>
+  `
+);
+
+    res.status(201).json({
+      message: "User registered successfully"
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Server error"
+    });
+
+  }
+
+};
+
+
+
+const verifyEmail = async (req, res) => {
+
+  try {
+
+    const { token } = req.params;
+
+    const user = await User.findOne({ emailVerificationToken: token });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid verification token" });
+    }
+
+    user.isVerified = true;
+    user.emailVerificationToken = undefined;
+
+    await user.save();
+
+    res.send("Email verified successfully. You can now login.");
+
+  } catch (error) {
+
+    res.status(500).json({ message: "Server error" });
+
+  }
+
+};
+
+const loginUser = async (req,res) =>{
+    try{
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+
+        if(!user){
+            return res.status(400).json({ message: "Invalid email or password"});
+        }
+
+        if(!user.isVerified){
+            return res.status(400).json({ message: "Please verify your emial first" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        
+        if(!isMatch){
+            return res.status(400).json({ message: "Invalid email or password" });
+        }
+
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        res.json({
+            message: "Login successful",
+            token
+        });
+    }
+    catch (error){
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+module.exports = { registerUser, verifyEmail, loginUser };
