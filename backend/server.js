@@ -5,6 +5,9 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const progressRoutes = require("./routes/progressRoutes");
 const habitRoutes = require("./routes/habitRoutes")
+const analyticsRoutes = require("./routes/analyticsRoutes");
+require("./cron/autoMiss");
+require("./cron/reminderEmail");
 
 
 dotenv.config();
@@ -16,9 +19,9 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
-app.use('/api/progress', progressRoutes);
-app.use('/api/habits', habitRoutes);
-
+app.use("/api/habits", habitRoutes);
+app.use("/api/progress", progressRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 
 app.get("/", (req, res) => {

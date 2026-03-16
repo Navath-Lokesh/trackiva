@@ -1,7 +1,7 @@
 const express = require("expire");
 const router = express.Router();
 
-const authMiddleware = require("../middlware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const {
     creatdHabit,
