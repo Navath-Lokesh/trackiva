@@ -1,4 +1,4 @@
-const DailyProgress = require("../models/DailyProgress");
+const DailyProgress = require("../models/Progress");
 
 exports.markHabit = async (req, res) => {
 

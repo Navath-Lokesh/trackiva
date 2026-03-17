@@ -3,10 +3,10 @@ const cron = require("node-cron");
 const User = require("../models/User");
 const Habit = require("../models/Habit");
 const Progress = require("../models/Progress");
+const sendEmail = require("../cron/sendEmail")
 
-const sendEmail = require("../utils/sendEmail");
 
-cron.schedule("0 20 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("Running reminder email job...");
 
   try {
@@ -38,7 +38,7 @@ cron.schedule("0 20 * * *", async () => {
 
       }
 
-      if(incompleteHabits.length > 0){
+      if(true){
 
         const subject = "Trackiva Reminder";
 

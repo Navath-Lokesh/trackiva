@@ -1,5 +1,5 @@
 const Habit = require("../models/Habit");
-const DailyProgress = require("../models/DailyProgress");
+const Progress = require("../models/Progress");
 
 exports.createHabit = async (req, res) => {
 
@@ -51,7 +51,7 @@ exports.deleteHabit = async (req, res) => {
 
     await Habit.findByIdAndDelete(habitId);
 
-    await DailyProgress.deleteMany({ habitId });
+    await Progress.deleteMany({ habitId });
 
     res.json({ message: "Habit deleted" });
 

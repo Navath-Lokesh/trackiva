@@ -31,4 +31,6 @@ const dailyProgressSchema = new mongoose.Schema({
 
 });
 
-module.exports = mongoose.model("DailyProgress", dailyProgressSchema);
+module.exports =
+  mongoose.models.DailyProgress ||
+  mongoose.model("DailyProgress", dailyProgressSchema);
