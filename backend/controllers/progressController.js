@@ -57,9 +57,13 @@ exports.getMontlyProgress = async (req, res) =>{
             date: { $gte: startDate, $lte: endDate }
         });
         res.json(progress);
-    } catch(error){
-        res.status(500).json({ message: "server error" });
-    }
+    } catch (error) {
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 };
 
 
@@ -80,7 +84,7 @@ exports.getHabitMatrix = async (req, res) => {
       date: { $gte: startDate, $lte: endDate }
     });
 
-    // 🔥 GROUP PROGRESS BY HABIT
+    //  GROUP PROGRESS BY HABIT
     const progressMap = {};
 
     progress.forEach(p => {
@@ -94,7 +98,7 @@ exports.getHabitMatrix = async (req, res) => {
       progressMap[habitId][day] = p.status;
     });
 
-    // 🔥 BUILD MATRIX
+    // BUILD MATRIX
     const matrix = habits.map(habit => ({
       habitId: habit._id,
       title: habit.title,
@@ -104,7 +108,11 @@ exports.getHabitMatrix = async (req, res) => {
     res.json(matrix);
 
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };

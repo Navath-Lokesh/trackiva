@@ -104,9 +104,12 @@ exports.getDashboardStats = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
 
@@ -159,10 +162,12 @@ exports.getHabitStats = async (req, res) => {
     res.json(result);
 
   } catch (error) {
-
-    res.status(500).json({ message: "Server error" });
-
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
 
@@ -197,10 +202,11 @@ exports.getHeatmapData = async (req, res) => {
 
     res.json(result);
 
-  } catch (error) {
-
-    res.status(500).json({ message: "Server error" });
-
-  }
-
+} catch (error) {
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 };

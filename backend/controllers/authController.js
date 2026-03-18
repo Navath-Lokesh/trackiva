@@ -56,12 +56,12 @@ const registerUser = async (req, res) => {
     });
 
   } catch (error) {
-
-    res.status(500).json({
-      message: "Server error"
-    });
-
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
 
@@ -87,10 +87,12 @@ const verifyEmail = async (req, res) => {
     res.send("Email verified successfully. You can now login.");
 
   } catch (error) {
-
-    res.status(500).json({ message: "Server error" });
-
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
 
@@ -123,10 +125,13 @@ const loginUser = async (req,res) =>{
             message: "Login successful",
             token
         });
-    }
-    catch (error){
-        res.status(500).json({ message: "Server error" });
-    }
+    } catch (error) {
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 }
 
 module.exports = { registerUser, verifyEmail, loginUser };

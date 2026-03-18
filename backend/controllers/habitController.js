@@ -20,10 +20,12 @@ exports.createHabit = async (req, res) => {
     });
 
   } catch (error) {
-
-    res.status(500).json({ message: "Server error" });
-
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
 
@@ -36,10 +38,12 @@ exports.getHabits = async (req, res) => {
     res.json(habits);
 
   } catch (error) {
-
-    res.status(500).json({ message: "Server error" });
-
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
 
@@ -56,9 +60,11 @@ exports.deleteHabit = async (req, res) => {
     res.json({ message: "Habit deleted" });
 
   } catch (error) {
-
-    res.status(500).json({ message: "Server error" });
-
-  }
+  console.error(error);
+  res.status(500).json({
+    success: false,
+    message: "Server error"
+  });
+}
 
 };
