@@ -4,50 +4,46 @@ const Progress = require("../models/Progress");
 
 
 exports.markHabit = async (req, res) => {
-
   try {
-
     const { habitId, date, status } = req.body;
 
-    const existing = await DailyProgress.findOne({
-      habitId,
-      userId: req.user.id,
-      date
-    });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    if (existing) {
+    const inputDate = new Date(date);
+    inputDate.setHours(0, 0, 0, 0);
 
-      existing.status = status;
-      await existing.save();
-
-      return res.json({
-        message: "Habit updated",
-        progress: existing
+    if (inputDate > today) {
+      return res.status(400).json({
+        message: "You cannot mark habits for future dates"
       });
-
     }
 
-    const progress = new DailyProgress({
-      habitId,
-      userId: req.user.id,
-      date,
-      status
-    });
+    const progress = await DailyProgress.findOneAndUpdate(
+      {
+        habitId,
+        userId: req.user.id,
+        date: inputDate
+      },
+      {
+        $set: { status }
+      },
+      {
+        new: true,
+        upsert: true
+      }
+    );
 
-    await progress.save();
-
-    res.status(201).json({
-      message: "Habit marked",
+    res.status(200).json({
+      message: "Habit marked/updated",
       progress
     });
 
   } catch (error) {
-
     res.status(500).json({ message: "Server error" });
-
   }
-
 };
+
 
 exports.getMontlyProgress = async (req, res) =>{
     try{
@@ -84,31 +80,31 @@ exports.getHabitMatrix = async (req, res) => {
       date: { $gte: startDate, $lte: endDate }
     });
 
-    const matrix = habits.map(habit => {
+    // 🔥 GROUP PROGRESS BY HABIT
+    const progressMap = {};
 
-      const dates = {};
+    progress.forEach(p => {
+      const habitId = p.habitId.toString();
 
-      progress.forEach(p => {
-        if (p.habitId.toString() === habit._id.toString()) {
-          const day = new Date(p.date).getDate();
-          dates[day] = p.status;
-        }
-      });
+      if (!progressMap[habitId]) {
+        progressMap[habitId] = {};
+      }
 
-      return {
-        habitId: habit._id,
-        title: habit.title,
-        dates
-      };
-
+      const day = new Date(p.date).getDate();
+      progressMap[habitId][day] = p.status;
     });
+
+    // 🔥 BUILD MATRIX
+    const matrix = habits.map(habit => ({
+      habitId: habit._id,
+      title: habit.title,
+      dates: progressMap[habit._id.toString()] || {}
+    }));
 
     res.json(matrix);
 
   } catch (error) {
-
     res.status(500).json({ message: "Server error" });
-
   }
 
 };

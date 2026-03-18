@@ -31,6 +31,8 @@ const dailyProgressSchema = new mongoose.Schema({
 
 });
 
+dailyProgressSchema.index({ userId: 1, habitId: 1, date: 1 });
+
 module.exports =
   mongoose.models.DailyProgress ||
   mongoose.model("DailyProgress", dailyProgressSchema);

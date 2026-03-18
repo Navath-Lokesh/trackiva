@@ -121,22 +121,32 @@ exports.getHabitStats = async (req, res) => {
 
     const progress = await require("../models/Progress").find({ userId });
 
+    const statsMap = {};
+
+    progress.forEach(p => {
+
+      const habitId = p.habitId.toString();
+
+      if (!statsMap[habitId]) {
+        statsMap[habitId] = { total: 0, done: 0 };
+      }
+
+      statsMap[habitId].total++;
+
+      if (p.status === "done") {
+        statsMap[habitId].done++;
+      }
+
+    });
+
     const result = habits.map(habit => {
 
-      const habitProgress = progress.filter(
-        p => p.habitId.toString() === habit._id.toString()
-      );
-
-      const totalDays = habitProgress.length;
-
-      const completedDays = habitProgress.filter(
-        p => p.status === "done"
-      ).length;
+      const stat = statsMap[habit._id.toString()] || { total: 0, done: 0 };
 
       const percentage =
-        totalDays === 0
+        stat.total === 0
           ? 0
-          : Math.round((completedDays / totalDays) * 100);
+          : Math.round((stat.done / stat.total) * 100);
 
       return {
         habitId: habit._id,
