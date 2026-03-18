@@ -3,10 +3,9 @@ const cron = require("node-cron");
 const User = require("../models/User");
 const Habit = require("../models/Habit");
 const Progress = require("../models/Progress");
-const sendEmail = require("../cron/sendEmail")
+const sendEmail = require("../cron/sendEmail");
 
-
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 20 * * *", async () => {
   console.log("Running reminder email job...");
 
   try {
@@ -15,6 +14,8 @@ cron.schedule("* * * * *", async () => {
 
     const today = new Date();
     today.setHours(0,0,0,0);
+
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 
     for(const user of users){
 
@@ -29,7 +30,7 @@ cron.schedule("* * * * *", async () => {
         const progress = await Progress.findOne({
           habitId: habit._id,
           userId: user._id,
-          date: today
+          date: { $gte: today, $lt: tomorrow }
         });
 
         if(!progress || progress.status !== "done"){
@@ -38,7 +39,7 @@ cron.schedule("* * * * *", async () => {
 
       }
 
-      if(true){
+      if(incompleteHabits.length > 0){
 
         const subject = "Trackiva Reminder";
 
@@ -58,9 +59,7 @@ cron.schedule("* * * * *", async () => {
     }
 
   } catch (error) {
-
     console.log("Reminder cron error:", error);
-
   }
 
 });
