@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
 
   const [stats, setStats] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchStats();
@@ -63,6 +65,12 @@ export default function Dashboard() {
 
       </div>
 
+      <button
+  onClick={() => navigate("/habits")} 
+  className="mt-4 bg-green-300 hover:bg-green-400 text-white font-bold px-4 py-2 rounded"
+>
+  Go to Habits
+</button>
     </div>
   );
 }
