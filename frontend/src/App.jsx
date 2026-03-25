@@ -3,6 +3,9 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Habits from "./pages/Habits";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
+import Analytics from "./pages/Analytics";
 
 
 const router = createBrowserRouter([
@@ -16,10 +19,32 @@ const router = createBrowserRouter([
   },
   {
     path:"/dashboard",
-    element: <Dashboard/>
+    element: (
+      <ProtectedRoute>
+      <Layout>
+        <Dashboard />
+      </Layout>
+    </ProtectedRoute>
+    )
   },{
     path:"/habits",
-    element: <Habits/>
+    element: (
+      <ProtectedRoute>
+         <Layout>
+        <Habits />
+      </Layout>
+      </ProtectedRoute>
+    )
+  },
+  {
+    path:"/analytics",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Analytics/>
+        </Layout>
+      </ProtectedRoute>
+    )
   }
 ])
 

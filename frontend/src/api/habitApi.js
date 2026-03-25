@@ -17,3 +17,11 @@ export const getHabits = async () => {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
+
+export const deleteHabit = async () =>{
+  const token =localStorage.getItem("token");
+
+  return axios.delete(`http://localhost:5000/api/habits${id}`,{
+    headers: { Authorization: `Bearer ${token}`}
+  });
+};

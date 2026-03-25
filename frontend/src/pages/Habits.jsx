@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { createHabit, getHabits } from "../api/habitApi";
+import { createHabit, getHabits, deleteHabit } from "../api/habitApi";
 import { markHabit, getMontlyProgress } from "../api/progressApi";
+
 
 export default function Habits() {
 
@@ -62,6 +63,11 @@ export default function Habits() {
     fetchProgress();
   };
 
+  const handleDelete = async (id) =>{
+    await deleteHabit(id);
+    fetchAll();
+  }
+
   const getColor = (habitId,day) =>{
     const key = `${habitId}-${day}`;
     const status = progressMap[key];
@@ -72,7 +78,7 @@ export default function Habits() {
     return "bg-gray-300";
   }
 
-  
+       
   const getContent = (habitId, day) => {   
     const key = `${habitId}-${day}`;       
     const status = progressMap[key];       
@@ -136,6 +142,11 @@ export default function Habits() {
                 ✔
             </div>
             {habit.title}
+            <button
+            onClick={() => handleDelete(habit._id)}
+             className="text-red-500 ml-2">
+               ❌
+             </button>
           </div>
 
           {/* Day Boxes */}
