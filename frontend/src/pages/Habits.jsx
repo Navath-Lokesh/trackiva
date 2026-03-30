@@ -95,82 +95,120 @@ export default function Habits() {
   }
 
   return (
-    <div className="p-6">
+  <div className="p-6 bg-white max-w-screen mt-2">
 
-        <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Trackiva</h1>
+    <div className="bg-white p-6 rounded-2xl shadow">
 
-            <div className="text-sm text-gray-600">
-                Total habits: { Array.isArray(habits) ? habits.length: 0}
-            </div>
+      {/* Top */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-xl font-semibold">Habits</h1>
+
+        <div className="text-sm text-gray-500">
+          Total habits: {habits.length} 🔥 Current: 5
         </div>
-
-      {/* <h1 className="text-2xl font-bold mb-4">Habits</h1> */}
-      <div className="mt-6 text-lg font-semibold text-orange-500">
-        🔥 You're on a {5} day streak!
       </div>
 
-      {/* Add Habit */}
+      {/* Streak */}
+      <div className="mb-4 text-orange-500 font-medium">
+        🔥 You’re on a 5 day streak!
+      </div>
+
+      {/* Add */}
       <div className="flex gap-2 mb-6">
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="New habit..."
-          className="border p-2 rounded"
+          className="border p-2 rounded-lg w-56 outline-none"
         />
-        <button onClick={handleAdd} className="bg-blue-500 text-white px-4 rounded">
+        <button
+          onClick={handleAdd}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+        >
           Add
         </button>
       </div>
 
-      {/* Days Header */}
-      <div className="flex gap-2 mb-2 ml-32">
-        {[...Array(31)].map((_, i) => (
-          <div key={i} className="w-8 text-center text-sm">
-            {i + 1}
-          </div>
-        ))}
+      {/* Header Row */}
+      <div className="flex items-center mb-3">
+
+        {/* Habit label (smaller width) */}
+        <div className="w-32 text--500 font-medium mr-3">
+          Habit
+        </div>
+
+        {/* Dates */}
+        <div className="flex gap-1.5 text-xs text-gray-800">
+          {[...Array(31)].map((_, i) => (
+            <div key={i} className="w-6 text-center">
+              {i + 1}
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {/* Habit Rows */}
-      {Array.isArray(habits) && habits.map((habit) => (
-        <div key={habit._id} className="flex items-center gap-2 mb-2">
+      {habits.map((habit) => (
+        <div key={habit._id} className="flex gap-2  items-center mb-2">
 
-          {/* Habit Name */}
-          <div className="w-32 flex items-center gap-2 bg-white p-2 rounded shadow">
-            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center text-white">
-                ✔
+          {/* Habit Info */}
+          <div className="w-32 flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg">
+
+            <div className="w-5 h-5 bg-green-100 text-green-600 flex items-center justify-center rounded-full text-xs">
+              ✔
             </div>
-            {habit.title}
+
+            <span className="text-sm truncate">
+              {habit.title}
+            </span>
+
             <button
-            onClick={() => handleDelete(habit._id)}
-             className="text-red-500 ml-2">
-               ❌
-             </button>
+              onClick={() => handleDelete(habit._id)}
+              className="ml-auto bg-red-200 w-5 h-5 rounded text-sm"
+            >
+              <span className="text-red-600 font-bold">X</span>
+            </button>
+
           </div>
 
-          {/* Day Boxes */}
-          {[...Array(31)].map((_, i) => {
-            const day = i + 1; 
+          {/* Boxes */}
+          <div className="flex gap-1.5 ml-1">
 
-            return (
-              <div
-                key={i}
-                onClick={() => !isFuture(day) && handleClick(habit._id, day)}
-                
-                className={`w-8 h-8 flex items-center justify-center text-white font-bold rounded 
-                  ${isFuture(day) ? "bg-gray-200 cursor-not-allowed" : "cursor-pointer"} 
-                  ${!isFuture(day) ? getColor(habit._id, day) : ""}`}                
-              >
-                
-                {isFuture(day) ? "🔒" : getContent(habit._id, day)}
-              </div>
-            );
-          })}
+            {[...Array(31)].map((_, i) => {
+              const day = i + 1;
+              const key = `${habit._id}-${day}`;
+              const status = progressMap[key];
+
+              let bg = "bg-gray-200";
+
+              if (status === "done") bg = "bg-green-400";
+              else if (status === "missed") bg = "bg-orange-300";
+
+              return (
+                <div
+                  key={i}
+                  onClick={() => !isFuture(day) && handleClick(habit._id, day)}
+                  className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold cursor-pointer ${bg}`}
+                >
+                  {isFuture(day)
+                    ? "🔒"
+                    : status === "done"
+                    ? "✔"
+                    : status === "missed"
+                    ? "✖"
+                    : ""}
+                </div>
+              );
+            })}
+
+          </div>
 
         </div>
       ))}
 
     </div>
-  );
+
+  </div>
+);
 }

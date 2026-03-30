@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Heatmap from "../components/Heatmap";
+import Habits from "./Habits";
+import Analytics from "./Analytics";
+import Chat from "./Chat";
+
 
 // 🔴 ADDED: safe parse function (prevents crash)
 const safeParse = (data) => {
@@ -60,12 +65,12 @@ export default function Dashboard() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
 
-        <button
+        {/* <button
           onClick={handleLogout}
           className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
         >
           Logout
-        </button>
+        </button> */}
       </div>
 
       {/* 🔴 ADDED: Welcome Section */}
@@ -126,13 +131,28 @@ export default function Dashboard() {
         </div>
 
       </div>
+      
 
-      <button
+      {/* <button
         onClick={() => navigate("/habits")} 
         className="mt-4 bg-green-300 hover:bg-green-400 text-white font-bold px-4 py-2 rounded"
       >
         Go to Habits
-      </button>
+      </button> */}
+      <Habits/>
+      <div className=" flex w-[1100px] h-[500px]">
+        <div className="w-2xl">
+        <Analytics/>
+        </div>
+        <div className="mt-15 ml-18">
+
+      <Heatmap/>
+        </div>
+
+        <div className="mt-[300px] mr-7">
+        <Chat/>
+        </div>
+      </div>
 
     </div>
   );

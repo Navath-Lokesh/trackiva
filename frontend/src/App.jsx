@@ -6,7 +6,7 @@ import Habits from "./pages/Habits";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Analytics from "./pages/Analytics";
-
+import Chat from "./pages/Chat";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +42,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <Analytics/>
+        </Layout>
+      </ProtectedRoute>
+    )
+  },
+  {
+     path: "/chat",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Chat />
         </Layout>
       </ProtectedRoute>
     )

@@ -35,6 +35,7 @@ export default function Navbar() {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/habits">Habits</Link>
         <Link to="/analytics">Analytics</Link>
+        <Link to="/chat">AI Chat</Link>
       </div>
 
       {/* User Section */}
@@ -53,7 +54,7 @@ export default function Navbar() {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="ml-4 text-red-500 font-medium"
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
         >
           Logout
         </button>
