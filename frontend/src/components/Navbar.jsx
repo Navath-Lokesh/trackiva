@@ -35,7 +35,7 @@ export default function Navbar() {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/habits">Habits</Link>
         <Link to="/analytics">Analytics</Link>
-        <Link to="/chat">AI Chat</Link>
+        {/* <Link to="/chat">AI Chat</Link> */}
       </div>
 
       {/* User Section */}

@@ -1,235 +1,24 @@
-// const Habit = require("../models/Habit");
-// const Progress = require("../models/Progress");
-
-// exports.getDashboardStats = async (req, res) => {
-
-//   try {
-
-//     const userId = req.user.id;
-
-//     const today = new Date();
-//     today.setHours(0,0,0,0);
-
-//     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-
-//     // total habits
-//     const habits = await Habit.find({ userId });
-//     const totalHabits = habits.length;
-
-//     // today progress
-//     const todayProgress = await Progress.find({
-//       userId,
-//       date: { $gte: today, $lt: tomorrow }
-//     });
-
-//     const completedToday = todayProgress.filter(p => p.status === "done").length;
-
-//     const todayPercentage =
-//       totalHabits === 0
-//         ? 0
-//         : Math.round((completedToday / totalHabits) * 100);
-
-//     // 🔥 STREAK
-//     let streak = 0;
-
-//     for(let i = 0; i < 30; i++){
-
-//       const dayStart = new Date(today);
-//       dayStart.setDate(today.getDate() - i);
-
-//       const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
-
-//       const dayProgress = await Progress.find({
-//         userId,
-//         date: { $gte: dayStart, $lt: dayEnd }
-//       });
-
-//       const doneCount = dayProgress.filter(p => p.status === "done").length;
-
-//       if(doneCount === totalHabits && totalHabits > 0){
-//         streak++;
-//       } else {
-//         break;
-//       }
-//     }
-
-//     // 📈 WEEKLY
-//     const startOfWeek = new Date(today);
-//     startOfWeek.setDate(today.getDate() - 6);
-
-//     const weeklyProgress = await Progress.find({
-//       userId,
-//       date: { $gte: startOfWeek, $lt: tomorrow }
-//     });
-
-//     const weeklyCompleted = weeklyProgress.filter(p => p.status === "done").length;
-//     const weeklyTotal = totalHabits * 7;
-
-//     const weeklyPercentage =
-//       weeklyTotal === 0
-//         ? 0
-//         : Math.round((weeklyCompleted / weeklyTotal) * 100);
-
-//     // 📅 MONTHLY
-//     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-//     const monthlyProgress = await Progress.find({
-//       userId,
-//       date: { $gte: startOfMonth, $lt: tomorrow }
-//     });
-
-//     const monthlyCompleted = monthlyProgress.filter(p => p.status === "done").length;
-
-//     const daysInMonth = new Date(
-//       today.getFullYear(),
-//       today.getMonth() + 1,
-//       0
-//     ).getDate();
-
-//     const monthlyTotal = totalHabits * daysInMonth;
-
-//     const monthlyPercentage =
-//       monthlyTotal === 0
-//         ? 0
-//         : Math.round((monthlyCompleted / monthlyTotal) * 100);
-
-//     // ✅ FINAL RESPONSE
-//     res.json({
-//       totalHabits,
-//       completedToday,
-//       todayPercentage,
-//       streak,
-//       weeklyPercentage,
-//       monthlyPercentage
-//     });
-
-//   } catch (error) {
-//   console.error(error);
-//   res.status(500).json({
-//     success: false,
-//     message: "Server error"
-//   });
-// }
-
-// };
-
-
-// exports.getHabitStats = async (req, res) => {
-
-//   try {
-
-//     const userId = req.user.id;
-
-//     const habits = await require("../models/Habit").find({ userId });
-
-//     const progress = await require("../models/Progress").find({ userId });
-
-//     const statsMap = {};
-
-//     progress.forEach(p => {
-
-//       const habitId = p.habitId.toString();
-
-//       if (!statsMap[habitId]) {
-//         statsMap[habitId] = { total: 0, done: 0 };
-//       }
-
-//       statsMap[habitId].total++;
-
-//       if (p.status === "done") {
-//         statsMap[habitId].done++;
-//       }
-
-//     });
-
-//     const result = habits.map(habit => {
-
-//       const stat = statsMap[habit._id.toString()] || { total: 0, done: 0 };
-
-//       const percentage =
-//         stat.total === 0
-//           ? 0
-//           : Math.round((stat.done / stat.total) * 100);
-
-//       return {
-//         habitId: habit._id,
-//         title: habit.title,
-//         percentage
-//       };
-
-//     });
-
-//     res.json(result);
-
-//   } catch (error) {
-//   console.error(error);
-//   res.status(500).json({
-//     success: false,
-//     message: "Server error"
-//   });
-// }
-
-// };
-
-// exports.getHeatmapData = async (req, res) => {
-
-//   try {
-
-//     const userId = req.user.id;
-
-//     const progress = await require("../models/Progress").find({ userId });
-
-//     const heatmap = {};
-
-//     progress.forEach(p => {
-
-//       const date = new Date(p.date).toISOString().split("T")[0];
-
-//       if (!heatmap[date]) {
-//         heatmap[date] = 0;
-//       }
-
-//       if (p.status === "done") {
-//         heatmap[date]++;
-//       }
-
-//     });
-
-//     const result = Object.keys(heatmap).map(date => ({
-//       date,
-//       count: heatmap[date]
-//     }));
-
-//     res.json(result);
-
-// } catch (error) {
-//   console.error(error);
-//   res.status(500).json({
-//     success: false,
-//     message: "Server error"
-//   });
-// }
-// };
-
 const Habit = require("../models/Habit");
 const Progress = require("../models/Progress");
 
+// ================= DASHBOARD =================
 exports.getDashboardStats = async (req, res) => {
-
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.id;
 
     const today = new Date();
-    today.setHours(0,0,0,0);
+    today.setHours(0, 0, 0, 0);
 
-    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const tomorrow = new Date(today.getTime() + 86400000);
 
-    // total habits
     const habits = await Habit.find({ userId });
     const totalHabits = habits.length;
 
-    // today progress
+    // ================= TODAY =================
     const todayProgress = await Progress.find({
       userId,
       date: { $gte: today, $lt: tomorrow }
@@ -238,19 +27,49 @@ exports.getDashboardStats = async (req, res) => {
     const completedToday = todayProgress.filter(p => p.status === "done").length;
 
     const todayPercentage =
-      totalHabits === 0
-        ? 0
-        : Math.round((completedToday / totalHabits) * 100);
+      totalHabits === 0 ? 0 : Math.round((completedToday / totalHabits) * 100);
 
-    // 🔥 STREAK
+    // ================= 🔴 WEEKLY (ADDED) =================
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - 6); // last 7 days
+
+    const weeklyProgress = await Progress.find({
+      userId,
+      date: { $gte: weekStart, $lt: tomorrow }
+    });
+
+    const weeklyDone = weeklyProgress.filter(p => p.status === "done").length;
+
+    const weeklyTotal = totalHabits * 7;
+
+    const weeklyPercentage =
+      weeklyTotal === 0 ? 0 : Math.round((weeklyDone / weeklyTotal) * 100);
+
+    // ================= 🔴 MONTHLY (ADDED) =================
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const monthlyProgress = await Progress.find({
+      userId,
+      date: { $gte: monthStart, $lt: tomorrow }
+    });
+
+    const daysInMonth = today.getDate(); // till today
+
+    const monthlyDone = monthlyProgress.filter(p => p.status === "done").length;
+
+    const monthlyTotal = totalHabits * daysInMonth;
+
+    const monthlyPercentage =
+      monthlyTotal === 0 ? 0 : Math.round((monthlyDone / monthlyTotal) * 100);
+
+    // ================= STREAK =================
     let streak = 0;
 
-    for(let i = 0; i < 30; i++){
-
+    for (let i = 0; i < 30; i++) {
       const dayStart = new Date(today);
       dayStart.setDate(today.getDate() - i);
 
-      const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
+      const dayEnd = new Date(dayStart.getTime() + 86400000);
 
       const dayProgress = await Progress.find({
         userId,
@@ -259,130 +78,67 @@ exports.getDashboardStats = async (req, res) => {
 
       const doneCount = dayProgress.filter(p => p.status === "done").length;
 
-      if(doneCount === totalHabits && totalHabits > 0){
+      if (doneCount === totalHabits && totalHabits > 0) {
         streak++;
       } else {
         break;
       }
     }
 
-    // 📈 WEEKLY
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - 6);
+    // ================= 🔴 HABIT STATS (FIX MISSING) =================
+const allProgress = await Progress.find({ userId });
 
-    const weeklyProgress = await Progress.find({
-      userId,
-      date: { $gte: startOfWeek, $lt: tomorrow }
-    });
+const statsMap = {};
 
-    const weeklyCompleted = weeklyProgress.filter(p => p.status === "done").length;
-    const weeklyTotal = totalHabits * 7;
+allProgress.forEach(p => {
+  const habitId = p.habitId?.toString();
+  if (!habitId) return;
 
-    const weeklyPercentage =
-      weeklyTotal === 0
-        ? 0
-        : Math.round((weeklyCompleted / weeklyTotal) * 100);
+  if (!statsMap[habitId]) {
+    statsMap[habitId] = { total: 0, done: 0 };
+  }
 
-    // 📅 MONTHLY
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  statsMap[habitId].total++;
 
-    const monthlyProgress = await Progress.find({
-      userId,
-      date: { $gte: startOfMonth, $lt: tomorrow }
-    });
+  if (p.status === "done") {
+    statsMap[habitId].done++;
+  }
+});
 
-    const monthlyCompleted = monthlyProgress.filter(p => p.status === "done").length;
+const habitStats = habits.map(habit => {
+  const stat = statsMap[habit._id.toString()] || { total: 0, done: 0 };
 
-    const daysInMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0
-    ).getDate();
+  const percentage =
+    stat.total === 0
+      ? 0
+      : Math.round((stat.done / stat.total) * 100);
 
-    const monthlyTotal = totalHabits * daysInMonth;
-
-    const monthlyPercentage =
-      monthlyTotal === 0
-        ? 0
-        : Math.round((monthlyCompleted / monthlyTotal) * 100);
-
-    // =====================================================
-    // 🔥 NEW CODE START: HABIT-WISE ANALYTICS (IMPORTANT)
-    // =====================================================
-
-    const progress = await Progress.find({ userId });
-
-    const statsMap = {};
-
-    progress.forEach(p => {
-
-      const habitId = p.habitId.toString();
-
-      if (!statsMap[habitId]) {
-        statsMap[habitId] = { total: 0, done: 0 };
-      }
-
-      statsMap[habitId].total++;
-
-      if (p.status === "done") {
-        statsMap[habitId].done++;
-      }
-
-    });
-
-    const habitStats = habits.map(habit => {
-
-      const stat = statsMap[habit._id.toString()] || { total: 0, done: 0 };
-
-      const percentage =
-        stat.total === 0
-          ? 0
-          : Math.round((stat.done / stat.total) * 100);
-
-      return {
-        habitId: habit._id,
-        title: habit.title,
-        percentage
-      };
-
-    });
-
-    // =====================================================
-    // 🔥 NEW CODE END
-    // =====================================================
-
-    // ✅ FINAL RESPONSE (UPDATED)
+  return {
+    habitId: habit._id,
+    title: habit.title,
+    percentage
+  };
+});
+    // ================= FINAL RESPONSE =================
     res.json({
       totalHabits,
       completedToday,
       todayPercentage,
+      weeklyPercentage,   // 🔴 ADDED
+      monthlyPercentage,  // 🔴 ADDED
       streak,
-      weeklyPercentage,
-      monthlyPercentage,
-
-      // 🔥 ADDED THIS (VERY IMPORTANT)
       habitStats
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
+    console.error("Dashboard Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-
-// =====================================================
-// ❌ OLD FUNCTION (NOW OPTIONAL)
-// You can DELETE this OR keep for separate API
-// =====================================================
-
+// ================= HABIT STATS =================
 exports.getHabitStats = async (req, res) => {
-
   try {
-
     const userId = req.user.id;
 
     const habits = await Habit.find({ userId });
@@ -391,8 +147,8 @@ exports.getHabitStats = async (req, res) => {
     const statsMap = {};
 
     progress.forEach(p => {
-
-      const habitId = p.habitId.toString();
+      const habitId = p.habitId?.toString();
+      if (!habitId) return;
 
       if (!statsMap[habitId]) {
         statsMap[habitId] = { total: 0, done: 0 };
@@ -403,11 +159,9 @@ exports.getHabitStats = async (req, res) => {
       if (p.status === "done") {
         statsMap[habitId].done++;
       }
-
     });
 
     const result = habits.map(habit => {
-
       const stat = statsMap[habit._id.toString()] || { total: 0, done: 0 };
 
       const percentage =
@@ -420,28 +174,22 @@ exports.getHabitStats = async (req, res) => {
         title: habit.title,
         percentage
       };
-
     });
 
     res.json(result);
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
+    console.error("Habit Stats Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-
-// =====================================================
-// HEATMAP (NO CHANGE)
-// =====================================================
-
+// ================= HEATMAP =================
 exports.getHeatmapData = async (req, res) => {
-
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const userId = req.user.id;
 
@@ -450,6 +198,7 @@ exports.getHeatmapData = async (req, res) => {
     const heatmap = {};
 
     progress.forEach(p => {
+      if (!p.date) return;
 
       const date = new Date(p.date).toISOString().split("T")[0];
 
@@ -460,7 +209,6 @@ exports.getHeatmapData = async (req, res) => {
       if (p.status === "done") {
         heatmap[date]++;
       }
-
     });
 
     const result = Object.keys(heatmap).map(date => ({
@@ -471,10 +219,7 @@ exports.getHeatmapData = async (req, res) => {
     res.json(result);
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Server error"
-    });
+    console.error("Heatmap Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

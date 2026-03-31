@@ -6,7 +6,6 @@ import Habits from "./Habits";
 import Analytics from "./Analytics";
 import Chat from "./Chat";
 
-
 // 🔴 ADDED: safe parse function (prevents crash)
 const safeParse = (data) => {
   try {
@@ -23,12 +22,16 @@ export default function Dashboard() {
 
   const handleLogout = () =>{
     localStorage.removeItem("token");
+    localStorage.removeItem("user"); // 🔴 ADDED: clear user also
     navigate("/");
   };
 
-  // 🔴 UPDATED: safe user extraction (instead of direct JSON.parse)
+  // 🔴 UPDATED: safe user extraction
   const userData = localStorage.getItem("user");
   const user = safeParse(userData);
+
+  // 🔴 ADDED: extract correct username (handles both cases)
+  const username = user?.name || user?.username || "User";
 
   useEffect(() => {
     fetchStats();
@@ -64,25 +67,17 @@ export default function Dashboard() {
 
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-
-        {/* <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button> */}
       </div>
 
-      {/* 🔴 ADDED: Welcome Section */}
+      {/* 🔴 UPDATED: use username variable */}
       <h1 className="text-3xl font-bold mb-2">
-        Welcome, {user?.name || "User"} 👋
+        Welcome, {username} 👋
       </h1>
 
       <p className="text-gray-500 mb-6">
         Track your habits and boost your productivity with Trackiva.
       </p>
 
-      {/* 🔴 EXISTING: MODERN CARDS WITH PROGRESS BARS */}
       <div className="grid grid-cols-3 gap-6">
 
         {/* TODAY */}
@@ -131,26 +126,20 @@ export default function Dashboard() {
         </div>
 
       </div>
-      
 
-      {/* <button
-        onClick={() => navigate("/habits")} 
-        className="mt-4 bg-green-300 hover:bg-green-400 text-white font-bold px-4 py-2 rounded"
-      >
-        Go to Habits
-      </button> */}
       <Habits/>
+
       <div className=" flex w-[1100px] h-[500px]">
         <div className="w-2xl">
-        <Analytics/>
+          <Analytics/>
         </div>
-        <div className="mt-15 ml-18">
 
-      <Heatmap/>
+        <div className="mt-15 ml-18">
+          <Heatmap/>
         </div>
 
         <div className="mt-[300px] mr-7">
-        <Chat/>
+          <Chat/>
         </div>
       </div>
 

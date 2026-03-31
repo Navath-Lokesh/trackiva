@@ -96,42 +96,50 @@ const verifyEmail = async (req, res) => {
 
 };
 
-const loginUser = async (req,res) =>{
-    try{
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        if(!user){
-            return res.status(400).json({ message: "Invalid email or password"});
-        }
+    const user = await User.findOne({ email });
 
-        if(!user.isVerified){
-            return res.status(400).json({ message: "Please verify your emial first" });
-        }
+    if (!user) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        
-        if(!isMatch){
-            return res.status(400).json({ message: "Invalid email or password" });
-        }
+    if (!user.isVerified) {
+      return res.status(400).json({ message: "Please verify your email first" });
+    }
 
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
+    const isMatch = await bcrypt.compare(password, user.password);
 
-        res.json({
-            message: "Login successful",
-            token
-        });
-    } catch (error) {
-  console.error(error);
-  res.status(500).json({
-    success: false,
-    message: "Server error"
-  });
-}
-}
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // 🔥 FIX: send user data also
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
 
 module.exports = { registerUser, verifyEmail, loginUser };
