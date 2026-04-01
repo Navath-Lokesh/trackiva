@@ -26,7 +26,8 @@ export default function Register() {
       // 🔥 Fix date format for backend
       const formattedData = {
         ...form,
-        dateOfBirth: new Date(form.dateOfBirth).toISOString()
+        // dateOfBirth: new Date(form.dateOfBirth).toISOString()
+        dateOfBirth: form.dateOfBirth
       };
 
       console.log("Sending Data:", formattedData); // Debug
