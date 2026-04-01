@@ -23,7 +23,15 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      await axios.post(`${API}/api/auth/register`, form);
+      // 🔥 Fix date format for backend
+      const formattedData = {
+        ...form,
+        dateOfBirth: new Date(form.dateOfBirth).toISOString()
+      };
+
+      console.log("Sending Data:", formattedData); // Debug
+
+      await axios.post(`${API}/api/auth/register`, formattedData);
 
       toast.success("Verification link sent to your email 📧");
 
@@ -34,26 +42,28 @@ export default function Register() {
         dateOfBirth: ""
       });
 
-      // Optional: redirect to login after 2s
       setTimeout(() => {
         navigate("/");
       }, 2000);
 
     } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed ❌");
+      console.log(err.response || err); // Debug
+      toast.error(
+        err.response?.data?.message ||
+        err.message ||
+        "Registration failed ❌"
+      );
     }
   };
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-900">
 
-      {/* Card */}
       <form
         onSubmit={handleRegister}
         className="bg-gray-800 border border-gray-700 p-8 rounded-2xl shadow-lg w-80"
       >
 
-        {/* Title */}
         <h2 className="text-2xl font-bold text-white mb-6 text-center">
           Create Account 🚀
         </h2>
@@ -64,15 +74,18 @@ export default function Register() {
           placeholder="Name"
           value={form.name}
           onChange={handleChange}
+          required
           className="w-full p-3 mb-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500"
         />
 
         {/* Email */}
         <input
           name="email"
+          type="email"
           placeholder="Email"
           value={form.email}
           onChange={handleChange}
+          required
           className="w-full p-3 mb-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500"
         />
 
@@ -83,15 +96,17 @@ export default function Register() {
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
+          required
           className="w-full p-3 mb-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500"
         />
 
-        {/* DOB */}
+        {/* Date of Birth */}
         <input
           name="dateOfBirth"
           type="date"
           value={form.dateOfBirth}
           onChange={handleChange}
+          required
           className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 outline-none focus:ring-2 focus:ring-green-500"
         />
 
