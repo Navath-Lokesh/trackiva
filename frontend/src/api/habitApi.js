@@ -1,6 +1,8 @@
 import axios from "axios";
+import BASE_URL from "./Main_url"; // ✅ correct path + case
 
-const API = "http://localhost:5000/api/habits";
+// ✅ FIXED BASE URL
+const API = `${BASE_URL}/api/habits`;
 
 export const createHabit = async (data) => {
   const token = localStorage.getItem("token");
@@ -18,7 +20,7 @@ export const getHabits = async () => {
   });
 };
 
-// 🔥 FIXED
+// ✅ DELETE HABIT
 export const deleteHabit = async (id) => {
   const token = localStorage.getItem("token");
 

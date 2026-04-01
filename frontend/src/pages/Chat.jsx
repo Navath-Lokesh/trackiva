@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import API from "../api/Main_url"; 
 
 export default function Chat() {
 
@@ -18,7 +19,7 @@ export default function Chat() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/chat",
+        `${API}/api/chat`, // ✅ FIXED
         { message },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -38,17 +39,14 @@ export default function Chat() {
   return (
     <div className=" bg-gray-900 flex justify-center">
 
-      {/* Chat Card */}
       <div className="w-full max-w-2xl bg-gray-800 border border-gray-700 rounded-2xl shadow flex flex-col h-[57vh]">
 
-        {/* Header */}
         <div className="p-4 border-b border-gray-700 flex items-center justify-between">
           <h1 className="text-lg font-semibold text-white">
             AI Assistant 🤖
           </h1>
         </div>
 
-        {/* Chat Messages */}
         <div className="flex-1 p-4 overflow-y-auto bg-gray-900">
 
           {chat.length === 0 && (
@@ -79,7 +77,6 @@ export default function Chat() {
 
         </div>
 
-        {/* Input Section */}
         <div className="p-4 border-t border-gray-700 flex gap-2 bg-gray-800">
 
           <input

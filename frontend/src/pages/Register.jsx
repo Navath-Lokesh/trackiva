@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import API from "../api/Main_url";
 
 export default function Register() {
 
@@ -22,7 +23,7 @@ export default function Register() {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", form);
+      await axios.post(`${API}/api/auth/register`, form);
 
       toast.success("Verification link sent to your email 📧");
 

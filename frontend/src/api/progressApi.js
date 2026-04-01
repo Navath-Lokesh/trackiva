@@ -1,6 +1,8 @@
 import axios from "axios";
+import BASE_URL from "./Main_url";
 
-const API = "http://localhost:5000/api/progress";
+// const API = "http://localhost:5000/api/progress";
+const API = `${BASE_URL}/api/progress`;
 
 export const markHabit = async (data) => {
   const token = localStorage.getItem("token");
