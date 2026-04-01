@@ -18,10 +18,11 @@ export const getHabits = async () => {
   });
 };
 
-export const deleteHabit = async () =>{
-  const token =localStorage.getItem("token");
+// 🔥 FIXED
+export const deleteHabit = async (id) => {
+  const token = localStorage.getItem("token");
 
-  return axios.delete(`http://localhost:5000/api/habits${id}`,{
-    headers: { Authorization: `Bearer ${token}`}
+  return axios.delete(`${API}/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
   });
 };

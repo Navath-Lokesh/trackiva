@@ -1,5 +1,5 @@
 const Habit = require("../models/Habit");
-const Progress = require("../models/Progress");
+const DailyProgress = require("../models/Progress");
 
 // ================= DASHBOARD =================
 exports.getDashboardStats = async (req, res) => {
@@ -19,48 +19,84 @@ exports.getDashboardStats = async (req, res) => {
     const totalHabits = habits.length;
 
     // ================= TODAY =================
-    const todayProgress = await Progress.find({
+    const todayProgress = await DailyProgress.find({
       userId,
       date: { $gte: today, $lt: tomorrow }
     });
 
-    const completedToday = todayProgress.filter(p => p.status === "done").length;
+    const completedTodaySet = new Set();
+
+    todayProgress.forEach(p => {
+      if (p.status === "done" && p.habitId) {
+        completedTodaySet.add(p.habitId.toString());
+      }
+    });
+
+    const completedToday = completedTodaySet.size;
 
     const todayPercentage =
-      totalHabits === 0 ? 0 : Math.round((completedToday / totalHabits) * 100);
+      totalHabits === 0
+        ? 0
+        : Math.min(100, Math.round((completedToday / totalHabits) * 100));
 
-    // ================= 🔴 WEEKLY (ADDED) =================
+    // ================= WEEKLY =================
     const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - 6); // last 7 days
+    weekStart.setDate(today.getDate() - 6);
 
-    const weeklyProgress = await Progress.find({
+    const weeklyProgress = await DailyProgress.find({
       userId,
       date: { $gte: weekStart, $lt: tomorrow }
     });
 
-    const weeklyDone = weeklyProgress.filter(p => p.status === "done").length;
+    const weeklySet = new Set();
 
+    weeklyProgress.forEach(p => {
+      if (p.status === "done" && p.habitId && p.date) {
+        const date = new Date(p.date).toISOString().split("T")[0];
+        weeklySet.add(`${date}_${p.habitId.toString()}`);
+      }
+    });
+
+    const weeklyDone = weeklySet.size;
     const weeklyTotal = totalHabits * 7;
 
     const weeklyPercentage =
-      weeklyTotal === 0 ? 0 : Math.round((weeklyDone / weeklyTotal) * 100);
+      weeklyTotal === 0
+        ? 0
+        : Math.min(100, Math.round((weeklyDone / weeklyTotal) * 100));
 
-    // ================= 🔴 MONTHLY (ADDED) =================
+    // ================= MONTHLY (🔥 FIXED) =================
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    const monthlyProgress = await Progress.find({
+    const monthlyProgress = await DailyProgress.find({
       userId,
       date: { $gte: monthStart, $lt: tomorrow }
     });
 
-    const daysInMonth = today.getDate(); // till today
+    const monthlySet = new Set();
 
-    const monthlyDone = monthlyProgress.filter(p => p.status === "done").length;
+    monthlyProgress.forEach(p => {
+      if (p.status === "done" && p.habitId && p.date) {
+        const date = new Date(p.date).toISOString().split("T")[0];
+        monthlySet.add(`${date}_${p.habitId.toString()}`);
+      }
+    });
 
-    const monthlyTotal = totalHabits * daysInMonth;
+    const monthlyDone = monthlySet.size;
+
+    // ✅ FULL MONTH DAYS (FIXED)
+    const totalDaysInMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    ).getDate();
+
+    const monthlyTotal = totalHabits * totalDaysInMonth;
 
     const monthlyPercentage =
-      monthlyTotal === 0 ? 0 : Math.round((monthlyDone / monthlyTotal) * 100);
+      monthlyTotal === 0
+        ? 0
+        : Math.min(100, Math.round((monthlyDone / monthlyTotal) * 100));
 
     // ================= STREAK =================
     let streak = 0;
@@ -71,61 +107,77 @@ exports.getDashboardStats = async (req, res) => {
 
       const dayEnd = new Date(dayStart.getTime() + 86400000);
 
-      const dayProgress = await Progress.find({
+      const dayProgress = await DailyProgress.find({
         userId,
         date: { $gte: dayStart, $lt: dayEnd }
       });
 
-      const doneCount = dayProgress.filter(p => p.status === "done").length;
+      const doneSet = new Set();
 
-      if (doneCount === totalHabits && totalHabits > 0) {
+      dayProgress.forEach(p => {
+        if (p.status === "done" && p.habitId) {
+          doneSet.add(p.habitId.toString());
+        }
+      });
+
+      if (doneSet.size === totalHabits && totalHabits > 0) {
         streak++;
       } else {
         break;
       }
     }
 
-    // ================= 🔴 HABIT STATS (FIX MISSING) =================
-const allProgress = await Progress.find({ userId });
+    // ================= HABIT STATS =================
+    const allProgress = await DailyProgress.find({ userId });
 
-const statsMap = {};
+    const statsMap = {};
 
-allProgress.forEach(p => {
-  const habitId = p.habitId?.toString();
-  if (!habitId) return;
+    allProgress.forEach(p => {
+      const habitId = p.habitId?.toString();
+      if (!habitId || !p.date) return;
 
-  if (!statsMap[habitId]) {
-    statsMap[habitId] = { total: 0, done: 0 };
-  }
+      const date = new Date(p.date).toISOString().split("T")[0];
+      const key = `${habitId}_${date}`;
 
-  statsMap[habitId].total++;
+      if (!statsMap[habitId]) {
+        statsMap[habitId] = {
+          dates: new Set(),
+          doneDates: new Set()
+        };
+      }
 
-  if (p.status === "done") {
-    statsMap[habitId].done++;
-  }
-});
+      statsMap[habitId].dates.add(key);
 
-const habitStats = habits.map(habit => {
-  const stat = statsMap[habit._id.toString()] || { total: 0, done: 0 };
+      if (p.status === "done") {
+        statsMap[habitId].doneDates.add(key);
+      }
+    });
 
-  const percentage =
-    stat.total === 0
-      ? 0
-      : Math.round((stat.done / stat.total) * 100);
+    const habitStats = habits.map(habit => {
+      const stat = statsMap[habit._id.toString()] || {
+        dates: new Set(),
+        doneDates: new Set()
+      };
 
-  return {
-    habitId: habit._id,
-    title: habit.title,
-    percentage
-  };
-});
-    // ================= FINAL RESPONSE =================
+      const total = stat.dates.size;
+      const done = stat.doneDates.size;
+
+      const percentage =
+        total === 0 ? 0 : Math.round((done / total) * 100);
+
+      return {
+        habitId: habit._id,
+        title: habit.title,
+        percentage
+      };
+    });
+
     res.json({
       totalHabits,
       completedToday,
       todayPercentage,
-      weeklyPercentage,   // 🔴 ADDED
-      monthlyPercentage,  // 🔴 ADDED
+      weeklyPercentage,
+      monthlyPercentage,
       streak,
       habitStats
     });
@@ -136,13 +188,14 @@ const habitStats = habits.map(habit => {
   }
 };
 
+
 // ================= HABIT STATS =================
 exports.getHabitStats = async (req, res) => {
   try {
     const userId = req.user.id;
 
     const habits = await Habit.find({ userId });
-    const progress = await Progress.find({ userId });
+    const progress = await DailyProgress.find({ userId });
 
     const statsMap = {};
 
@@ -184,6 +237,7 @@ exports.getHabitStats = async (req, res) => {
   }
 };
 
+
 // ================= HEATMAP =================
 exports.getHeatmapData = async (req, res) => {
   try {
@@ -193,7 +247,7 @@ exports.getHeatmapData = async (req, res) => {
 
     const userId = req.user.id;
 
-    const progress = await Progress.find({ userId });
+    const progress = await DailyProgress.find({ userId });
 
     const heatmap = {};
 

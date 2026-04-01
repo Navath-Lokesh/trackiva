@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { toast } from "react-toastify";
 
 export default function Login() {
 
@@ -14,147 +14,76 @@ export default function Login() {
     e.preventDefault();
 
     try {
-
       const res = await axios.post("http://localhost:5000/api/auth/login", {
         email,
         password
       });
 
-        console.log(res.data);
-
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      alert("Login successful");
-      
+      toast.success("Login Successful 🚀");
 
-      navigate("/dashboard");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
 
     } catch (err) {
-      alert("Login failed");
+      toast.error(err.response?.data?.message || "Invalid email or password ❌");
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <form onSubmit={handleLogin} className="bg-white p-6 rounded-lg shadow-md w-80">
+    <div className="flex h-screen items-center justify-center bg-gray-900">
 
-        <h2 className="text-2xl font-bold mb-4">Login</h2>
+      {/* Card */}
+      <form
+        onSubmit={handleLogin}
+        className="bg-gray-800 border border-gray-700 p-8 rounded-2xl shadow-lg w-80"
+      >
 
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          Welcome Back 👋
+        </h2>
+
+        {/* Email */}
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 mb-3 border rounded"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500"
         />
 
+        {/* Password */}
         <input
           type="password"
           placeholder="Password"
           autoComplete="current-password"
-          className="w-full p-2 mb-3 border rounded"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        <button className="w-full bg-blue-500 text-white p-2 rounded">
+        {/* Button */}
+        <button className="w-full bg-blue-500 hover:bg-blue-600 transition text-white p-3 rounded-lg font-semibold">
           Login
         </button>
 
-        <p className="text-sm mt-4 text-center">
+        {/* Register */}
+        <p className="text-sm mt-5 text-center text-gray-400">
           Don't have an account?{" "}
           <span
-          className="text-blue-500 cursor-pointer font-medium"
-          onClick={() => navigate("/Register")}>
+            className="text-blue-400 cursor-pointer font-medium hover:underline"
+            onClick={() => navigate("/register")}
+          >
             Register
           </span>
-          </p>
-
-        {/* <button  className="w-50px bg-green-400 text-white p-2 rounded mt-3 ml-14"  onClick={<Register/>}>Create an account</button> */}
+        </p>
 
       </form>
+
     </div>
   );
 }
-
-
-
-
-
-
-// code is only for mobile screen
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-
-// // 🔥 TEMP BASE URL (FOR MOBILE TESTING)
-// const BASE_URL = "http://192.168.29.218:5000/api";
-
-// export default function Login() {
-
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-
-//   const navigate = useNavigate();
-
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-
-//     try {
-
-//       const res = await axios.post(`${BASE_URL}/auth/login`, {
-//         email,
-//         password
-//       });
-
-//       localStorage.setItem("token", res.data.token);
-//       localStorage.setItem("user", JSON.stringify(res.data.user));
-
-//       alert("Login successful");
-
-//       navigate("/dashboard");
-
-//     } catch (err) {
-//       console.log(err.response?.data || err.message);
-//       alert("Login failed");
-//     }
-//   };
-
-//   return (
-//     <div className="flex h-screen items-center justify-center bg-gray-100">
-//       <form onSubmit={handleLogin} className="bg-white p-6 rounded-lg shadow-md w-80">
-
-//         <h2 className="text-2xl font-bold mb-4">Login</h2>
-
-//         <input
-//           type="email"
-//           placeholder="Email"
-//           className="w-full p-2 mb-3 border rounded"
-//           onChange={(e) => setEmail(e.target.value)}
-//         />
-
-//         <input
-//           type="password"
-//           placeholder="Password"
-//           className="w-full p-2 mb-3 border rounded"
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-
-//         <button className="w-full bg-blue-500 text-white p-2 rounded">
-//           Login
-//         </button>
-
-//         <p className="text-sm mt-4 text-center">
-//           Don't have an account?{" "}
-//           <span
-//             className="text-blue-500 cursor-pointer font-medium"
-//             onClick={() => navigate("/register")}
-//           >
-//             Register
-//           </span>
-//         </p>
-
-//       </form>
-//     </div>
-//   );
-// }

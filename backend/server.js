@@ -7,16 +7,22 @@ const progressRoutes = require("./routes/progressRoutes");
 const habitRoutes = require("./routes/habitRoutes")
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+
+
 require("./cron/autoMiss");
 require("./cron/reminderEmail");
 
 
 dotenv.config();
+
+
 connectDB();
 
 const app = express();
 
 app.use(cors());
+
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -30,8 +36,18 @@ app.get("/", (req, res) => {
   res.send("Trackiva API Running...");
 });
 
-const PORT = process.env.PORT || 5000;
 
+app.use((err, req, res, next) =>{
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Something went Wrong"
+  });
+});
+
+
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

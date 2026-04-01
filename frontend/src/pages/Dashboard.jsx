@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Heatmap from "../components/Heatmap";
 import Habits from "./Habits";
 import Analytics from "./Analytics";
 import Chat from "./Chat";
+import { getAnalytics } from "../api/analyticsApi";
 
-// 🔴 ADDED: safe parse function (prevents crash)
 const safeParse = (data) => {
   try {
     return JSON.parse(data);
@@ -20,17 +19,14 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const navigate = useNavigate();
 
-  const handleLogout = () =>{
+  const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user"); // 🔴 ADDED: clear user also
+    localStorage.removeItem("user");
     navigate("/");
   };
 
-  // 🔴 UPDATED: safe user extraction
   const userData = localStorage.getItem("user");
   const user = safeParse(userData);
-
-  // 🔴 ADDED: extract correct username (handles both cases)
   const username = user?.name || user?.username || "User";
 
   useEffect(() => {
@@ -39,87 +35,88 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     try {
-
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get(
-        "http://localhost:5000/api/analytics/dashboard",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      console.log(res.data);
+      const res = await getAnalytics();
       setStats(res.data);
-
     } catch (err) {
       console.log(err.response?.data || err.message);
     }
   };
 
-  if (!stats) return <div>Loading...</div>;
+  if (!stats) {
+    return (
+      <div className="flex justify-center items-center h-screen text-lg text-gray-400">
+        Loading...
+      </div>
+    );
+  }
 
   return (
+    <div className="p-6 bg-gray-900 min-h-screen text-white">
 
-    <div className="p-6 bg-gray-100 min-h-screen">
-
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
+
+        {/* <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 transition text-white px-4 py-2 rounded-lg"
+        >
+          Logout
+        </button> */}
       </div>
 
-      {/* 🔴 UPDATED: use username variable */}
+      {/* USER GREETING */}
       <h1 className="text-3xl font-bold mb-2">
         Welcome, {username} 👋
       </h1>
 
-      <p className="text-gray-500 mb-6">
+      <p className="text-gray-400 mb-6">
         Track your habits and boost your productivity with Trackiva.
       </p>
 
+      {/* STATS */}
       <div className="grid grid-cols-3 gap-6">
 
         {/* TODAY */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">Today's Progress</h2>
-          <p className="text-3xl font-bold text-green-500">
+        <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
+          <h2 className="text-gray-400">Today's Progress</h2>
+          <p className="text-3xl font-bold text-green-400">
             {stats.todayPercentage}%
           </p>
 
-          <div className="w-full bg-gray-200 h-2 rounded mt-2">
+          <div className="w-full bg-gray-700 h-2 rounded mt-2">
             <div
-              className="bg-green-500 h-2 rounded"
+              className="bg-green-400 h-2 rounded"
               style={{ width: `${stats.todayPercentage}%` }}
             ></div>
           </div>
         </div>
 
         {/* WEEKLY */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">Weekly Progress</h2>
-          <p className="text-3xl font-bold text-blue-500">
+        <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
+          <h2 className="text-gray-400">Weekly Progress</h2>
+          <p className="text-3xl font-bold text-blue-400">
             {stats.weeklyPercentage || 0}%
           </p>
 
-          <div className="w-full bg-gray-200 h-2 rounded mt-2">
+          <div className="w-full bg-gray-700 h-2 rounded mt-2">
             <div
-              className="bg-blue-500 h-2 rounded"
+              className="bg-blue-400 h-2 rounded"
               style={{ width: `${stats.weeklyPercentage || 0}%` }}
             ></div>
           </div>
         </div>
 
         {/* MONTHLY */}
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-gray-500">Monthly Progress</h2>
-          <p className="text-3xl font-bold text-orange-500">
+        <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
+          <h2 className="text-gray-400">Monthly Progress</h2>
+          <p className="text-3xl font-bold text-orange-400">
             {stats.monthlyPercentage || 0}%
           </p>
 
-          <div className="w-full bg-gray-200 h-2 rounded mt-2">
+          <div className="w-full bg-gray-700 h-2 rounded mt-2">
             <div
-              className="bg-orange-500 h-2 rounded"
+              className="bg-orange-400 h-2 rounded"
               style={{ width: `${stats.monthlyPercentage || 0}%` }}
             ></div>
           </div>
@@ -127,20 +124,30 @@ export default function Dashboard() {
 
       </div>
 
-      <Habits/>
+      {/* HABITS */}
+      <div className="mt-8">
+        <Habits />
+      </div>
 
-      <div className=" flex w-[1100px] h-[500px]">
-        <div className="w-2xl">
-          <Analytics/>
+      {/* ANALYTICS + HEATMAP + CHAT */}
+      <div className="flex gap-6 mt-8">
+
+        <div className="flex-1">
+          <Analytics />
         </div>
 
-        <div className="mt-15 ml-18">
-          <Heatmap/>
+        <div className="flex flex-col gap-4">
+
+          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
+            <Heatmap />
+          </div>
+
+          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
+            <Chat />
+          </div>
+
         </div>
 
-        <div className="mt-[300px] mr-7">
-          <Chat/>
-        </div>
       </div>
 
     </div>

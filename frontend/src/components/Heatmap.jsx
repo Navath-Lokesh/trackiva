@@ -15,23 +15,25 @@ export default function Heatmap() {
   };
 
   const getColor = (count) => {
-    if (count === 0) return "bg-gray-200";
-    if (count < 2) return "bg-green-300";
+    if (count === 0) return "bg-gray-700";     // dark empty
+    if (count < 2) return "bg-green-400";
     if (count < 4) return "bg-green-500";
-    return "bg-green-700";
+    return "bg-green-600";
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow mt-6 w-[370px] h-[180px]">
+    <div className="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow w-[370px] h-[180px]">
 
-      <h2 className="text-lg font-semibold mb-4">Consistency Heatmap</h2>
+      <h2 className="text-lg font-semibold mb-4 text-white">
+        Consistency Heatmap
+      </h2>
 
       <div className="grid grid-cols-10 gap-2">
 
         {data.map((item, index) => (
           <div
             key={index}
-            className={`w-6 h-6 rounded ${getColor(item.count)}`}
+            className={`w-6 h-6 rounded ${getColor(item.count)} transition`}
             title={`${item.date} → ${item.count}`}
           />
         ))}

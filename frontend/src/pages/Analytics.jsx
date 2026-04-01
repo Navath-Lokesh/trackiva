@@ -1,8 +1,6 @@
 import { Bar } from "react-chartjs-2";
 import { useEffect, useState } from "react";
-
-// 🔴 FIXED: make sure file name matches correctly
-import { getAnalytics } from "../api/analyticsApi"; 
+import { getAnalytics } from "../api/analyticsApi";
 
 import {
   Chart as ChartJS,
@@ -16,48 +14,45 @@ ChartJS.register(CategoryScale, LinearScale, BarElement);
 export default function Analytics() {
 
   const [analytics, setAnalytics] = useState(null);
-  const [loading, setLoading] = useState(true); // 🔴 ADDED loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchAnalytics();
-  }, []); // ✅ runs on mount
+  }, []);
 
   const fetchAnalytics = async () => {
     try {
-      setLoading(true); // 🔴 ADDED
-
+      setLoading(true);
       const res = await getAnalytics();
-
-      console.log("Analytics API:", res.data); // 🔴 DEBUG
-
       setAnalytics(res.data);
-
     } catch (err) {
-      console.log(err.response?.data || err.message); // 🔴 ADDED error handling
+      console.log(err.response?.data || err.message);
     } finally {
-      setLoading(false); // 🔴 ADDED
+      setLoading(false);
     }
   };
 
-  // 🔴 UPDATED: better loading condition
-  if (loading) return <div>Loading analytics...</div>;
+  if (loading) {
+    return (
+      <div className="text-gray-400 text-center p-6">
+        Loading analytics...
+      </div>
+    );
+  }
 
-  // 🔴 FIXED: safe fallback
   const habits = analytics?.habitStats || [];
 
-  // 🔴 ADDED: empty state UI
   if (habits.length === 0) {
     return (
-      <div className="p-6">
+      <div className="p-6 text-white">
         <h1 className="text-xl font-bold">Analytics</h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-gray-400 mt-2">
           No analytics data available yet.
         </p>
       </div>
     );
   }
 
-  // ✅ Chart data
   const data = {
     labels: habits.map(h => h.title),
     datasets: [
@@ -70,45 +65,56 @@ export default function Analytics() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-900 text-white">
 
       <h1 className="text-2xl font-bold mb-6">Analytics</h1>
 
       {/* Chart */}
-      <div className="bg-white p-6 rounded-xl shadow max-w-4xl mx-auto">
-
+      <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700 max-w-4xl mx-auto">
         <div className="h-[300px]">
-          <Bar 
-            data={data} 
+          <Bar
+            data={data}
             options={{
               maintainAspectRatio: false,
               plugins: {
                 legend: { display: false }
               },
               scales: {
+                x: {
+                  ticks: { color: "#9CA3AF" },
+                  grid: { color: "#374151" }
+                },
                 y: {
                   beginAtZero: true,
-                  max: 100
+                  max: 100,
+                  ticks: { color: "#9CA3AF" },
+                  grid: { color: "#374151" }
                 }
               }
             }}
           />
         </div>
-
       </div>
 
       {/* Habit Cards */}
       <div className="grid grid-cols-3 gap-4 mt-6 max-w-4xl mx-auto">
 
-        {habits.map((habit, index) => (
-          <div key={index} className="bg-white p-4 rounded-xl shadow">
+        {habits.map((habit) => (
+          <div
+            key={habit.habitId}
+            className="bg-gray-800 p-4 rounded-xl shadow border border-gray-700"
+          >
 
             <div className="flex justify-between mb-2">
-              <p className="font-medium capitalize">{habit.title}</p>
-              <p className="text-gray-500">{habit.percentage}%</p>
+              <p className="font-medium capitalize text-gray-200">
+                {habit.title}
+              </p>
+              <p className="text-gray-400">
+                {habit.percentage}%
+              </p>
             </div>
 
-            <div className="bg-gray-200 h-2 rounded">
+            <div className="bg-gray-700 h-2 rounded">
               <div
                 className="bg-green-500 h-2 rounded"
                 style={{ width: `${habit.percentage}%` }}

@@ -1,19 +1,19 @@
 import axios from "axios";
 
-//  const BASE_URL = "http://192.168.29.218:5000/api";
+const API = "http://localhost:5000/api/analytics";
 
-export const getAnalytics = async () =>{
-    const token = localStorage.getItem("token");
+export const getAnalytics = async () => {
+  const token = localStorage.getItem("token");
 
-    return axios.get("http://localhost:5000/api/analytics/dashboard",{
-        headers: { Authorization: `Bearer ${token}`}
-    });
+  return axios.get(`${API}/dashboard`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 };
 
-export const getHeatmap = async() =>{
-    const token = localStorage.getItem("token");
+export const getHeatmap = async () => {
+  const token = localStorage.getItem("token");
 
-    return axios.get("http://localhost:5000/api/analytics/heatmap",{
-        headers: { Authorization: `Bearer ${token}`}
-    });
-}
+  return axios.get(`${API}/heatmap`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};

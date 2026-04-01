@@ -68,15 +68,13 @@ const registerUser = async (req, res) => {
 
 
 const verifyEmail = async (req, res) => {
-
   try {
-
     const { token } = req.params;
 
     const user = await User.findOne({ emailVerificationToken: token });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid verification token" });
+      return res.redirect("http://localhost:5173/?error=invalid_token");
     }
 
     user.isVerified = true;
@@ -84,16 +82,13 @@ const verifyEmail = async (req, res) => {
 
     await user.save();
 
-    res.send("Email verified successfully. You can now login.");
+    // ✅ Redirect to frontend verify page
+    res.redirect("http://localhost:5173/verify");
 
   } catch (error) {
-  console.error(error);
-  res.status(500).json({
-    success: false,
-    message: "Server error"
-  });
-}
-
+    console.error(error);
+    res.redirect("http://localhost:5173/?error=server_error");
+  }
 };
 
 const loginUser = async (req, res) => {
@@ -129,7 +124,8 @@ const loginUser = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        createdAt: user.createdAt
       }
     });
 

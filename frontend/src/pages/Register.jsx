@@ -1,5 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
 
@@ -10,6 +12,8 @@ export default function Register() {
     dateOfBirth: ""
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -18,32 +22,96 @@ export default function Register() {
     e.preventDefault();
 
     try {
-
       await axios.post("http://localhost:5000/api/auth/register", form);
 
-      alert("Check your email for verification");
+      toast.success("Verification link sent to your email 📧");
+
+      setForm({
+        name: "",
+        email: "",
+        password: "",
+        dateOfBirth: ""
+      });
+
+      // Optional: redirect to login after 2s
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
 
     } catch (err) {
-      alert("Registration failed");
+      toast.error(err.response?.data?.message || "Registration failed ❌");
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <form onSubmit={handleRegister} className="bg-white p-6 rounded-lg shadow-md w-80">
+    <div className="flex h-screen items-center justify-center bg-gray-900">
 
-        <h2 className="text-2xl font-bold mb-4">Register</h2>
+      {/* Card */}
+      <form
+        onSubmit={handleRegister}
+        className="bg-gray-800 border border-gray-700 p-8 rounded-2xl shadow-lg w-80"
+      >
 
-        <input name="name" placeholder="Name" className="w-full p-2 mb-2 border" onChange={handleChange}/>
-        <input name="email" placeholder="Email" className="w-full p-2 mb-2 border" onChange={handleChange}/>
-        <input name="password" type="password" placeholder="Password" className="w-full p-2 mb-2 border" onChange={handleChange}/>
-        <input name="dateOfBirth" type="date" className="w-full p-2 mb-2 border" onChange={handleChange}/>
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          Create Account 🚀
+        </h2>
 
-        <button className="w-full bg-green-500 text-white p-2 rounded">
+        {/* Name */}
+        <input
+          name="name"
+          placeholder="Name"
+          value={form.name}
+          onChange={handleChange}
+          className="w-full p-3 mb-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500"
+        />
+
+        {/* Email */}
+        <input
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          className="w-full p-3 mb-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500"
+        />
+
+        {/* Password */}
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          className="w-full p-3 mb-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-green-500"
+        />
+
+        {/* DOB */}
+        <input
+          name="dateOfBirth"
+          type="date"
+          value={form.dateOfBirth}
+          onChange={handleChange}
+          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 outline-none focus:ring-2 focus:ring-green-500"
+        />
+
+        {/* Button */}
+        <button className="w-full bg-green-500 hover:bg-green-600 transition text-white p-3 rounded-lg font-semibold">
           Register
         </button>
 
+        {/* Login redirect */}
+        <p className="text-sm mt-5 text-center text-gray-400">
+          Already have an account?{" "}
+          <span
+            className="text-green-400 cursor-pointer font-medium hover:underline"
+            onClick={() => navigate("/")}
+          >
+            Login
+          </span>
+        </p>
+
       </form>
+
     </div>
   );
 }

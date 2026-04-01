@@ -7,6 +7,10 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import Analytics from "./pages/Analytics";
 import Chat from "./pages/Chat";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Verify from "./pages/Verify";
+
 
 const router = createBrowserRouter([
   {
@@ -16,6 +20,9 @@ const router = createBrowserRouter([
   {
     path:"/register",
     element: <Register/>
+  },{
+    path: "/Verify",
+    element: <Verify/>
   },
   {
     path:"/dashboard",
@@ -56,10 +63,18 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     )
   }
-])
+]);
 
-function App(){
-  return <RouterProvider router={router}/>
+function App() {
+  return (
+    <>
+      {/* ✅ Toast container added here */}
+      <ToastContainer position="top-right" autoClose={2000} />
+
+      {/* Router */}
+      <RouterProvider router={router} />
+    </>
+  );
 }
 
-export default App
+export default App;
