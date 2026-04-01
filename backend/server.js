@@ -58,6 +58,76 @@
 //   console.log(`Server running on port ${PORT}`);
 // });
 
+
+
+
+
+
+
+
+// const express = require("express");
+// const cors = require("cors");
+// const dotenv = require("dotenv");
+// const connectDB = require("./config/db");
+
+// const authRoutes = require("./routes/authRoutes");
+// const progressRoutes = require("./routes/progressRoutes");
+// const habitRoutes = require("./routes/habitRoutes");
+// const analyticsRoutes = require("./routes/analyticsRoutes");
+// const chatRoutes = require("./routes/chatRoutes");
+
+// // cron jobs
+// require("./cron/autoMiss");
+// require("./cron/reminderEmail");
+
+// // load env variables
+// dotenv.config();
+
+// // connect to database
+// connectDB();
+
+// const app = express();
+
+// // trust proxy (important for render)
+// app.set("trust proxy", 1);
+
+// // CORS configuration
+// app.use(cors({
+//   origin: process.env.CLIENT_URL || "*",
+//   credentials: true
+// }));
+
+// // middleware
+// app.use(express.json());
+
+// /* ================= ROOT ROUTE ================= */
+// app.get("/", (req, res) => {
+//   res.send("Trackiva API Running...");
+// });
+
+// /* ================= ROUTES ================= */
+// app.use("/api/auth", authRoutes);
+// app.use("/api/habits", habitRoutes);
+// app.use("/api/progress", progressRoutes);
+// app.use("/api/analytics", analyticsRoutes);
+// app.use("/api/chat", chatRoutes);
+
+// /* ================= ERROR HANDLER ================= */
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({
+//     success: false,
+//     message: "Something went Wrong"
+//   });
+// });
+
+// /* ================= SERVER ================= */
+// const PORT = process.env.PORT || 5000;
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -84,37 +154,48 @@ const app = express();
 // trust proxy (important for render)
 app.set("trust proxy", 1);
 
-// CORS configuration
+// ================= CORS FIX =================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://trackiva-phi.vercel.app"
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || "*",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 
-// middleware
+// ================= MIDDLEWARE =================
 app.use(express.json());
 
-/* ================= ROOT ROUTE ================= */
+// ================= ROOT ROUTE =================
 app.get("/", (req, res) => {
   res.send("Trackiva API Running...");
 });
 
-/* ================= ROUTES ================= */
+// ================= ROUTES =================
 app.use("/api/auth", authRoutes);
 app.use("/api/habits", habitRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/chat", chatRoutes);
 
-/* ================= ERROR HANDLER ================= */
+// ================= ERROR HANDLER =================
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
     success: false,
-    message: "Something went Wrong"
+    message: "Something went wrong"
   });
 });
 
-/* ================= SERVER ================= */
+// ================= SERVER =================
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
