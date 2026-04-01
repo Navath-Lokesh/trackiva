@@ -1,11 +1,10 @@
 import axios from "axios";
-
-const API = "http://localhost:5000/api/analytics";
+import API from "./Main_url";
 
 export const getAnalytics = async () => {
   const token = localStorage.getItem("token");
 
-  return axios.get(`${API}/dashboard`, {
+  return axios.get(`${API}/api/analytics/dashboard`, {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
@@ -13,7 +12,7 @@ export const getAnalytics = async () => {
 export const getHeatmap = async () => {
   const token = localStorage.getItem("token");
 
-  return axios.get(`${API}/heatmap`, {
+  return axios.get(`${API}/api/analytics/heatmap`, {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
