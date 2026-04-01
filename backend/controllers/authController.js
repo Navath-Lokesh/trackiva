@@ -4,70 +4,70 @@ const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
 
+// ================= REGISTER =================
 const registerUser = async (req, res) => {
-
   try {
-
     const { name, email, password, dateOfBirth } = req.body;
 
-    
+    // 🔍 Check existing user
     const existingUser = await User.findOne({ email });
-
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    
+    // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 🔑 Generate verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    // const verificationUrl = `http://localhost:5000/api/auth/verify-email/${verificationToken}`;
-    const verificationUrl = `https://trackiva.onrender.com/api/auth/verify-email/${verificationToken}`;
+
+    // 🌐 Use ENV base URL (BEST PRACTICE)
+    const verificationUrl = `${process.env.BASE_URL}/api/auth/verify-email/${verificationToken}`;
+
+    // 👤 Create user
     const newUser = new User({
       name,
       email,
       password: hashedPassword,
       dateOfBirth,
-      emailVerificationToken: verificationToken
+      emailVerificationToken: verificationToken,
+      isVerified: false // ✅ IMPORTANT FIX
     });
 
     await newUser.save();
 
+    // 📧 Send verification email
+    await sendEmail(
+      email,
+      "Verify your Trackiva account",
+      `
+      <h2>Welcome to Trackiva</h2>
+      <p>Click the button below to verify your email:</p>
 
-   await sendEmail(
-  email,
-  "Verify your Trackiva account",
-  `
-  <h2>Welcome to Trackiva</h2>
-  <p>Click the button below to verify your email:</p>
+      <a href="${verificationUrl}" 
+         style="background:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
+         Verify Email
+      </a>
 
-  <a href="${verificationUrl}" 
-     style="background:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
-     Verify Email
-  </a>
-
-  <p>If the button does not work, copy this link:</p>
-
-  <p>${verificationUrl}</p>
-  `
-);
+      <p>If the button does not work, copy this link:</p>
+      <p>${verificationUrl}</p>
+      `
+    );
 
     res.status(201).json({
       message: "User registered successfully"
     });
 
   } catch (error) {
-  console.error(error);
-  res.status(500).json({
-    success: false,
-    message: "Server error"
-  });
-}
-
+    console.error("Register Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
 };
 
-
-
+// ================= VERIFY EMAIL =================
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.params;
@@ -75,7 +75,7 @@ const verifyEmail = async (req, res) => {
     const user = await User.findOne({ emailVerificationToken: token });
 
     if (!user) {
-      return res.redirect("https://trackiva-phi.vercel.app/?error=invalid_token");
+      return res.redirect(`${process.env.FRONTEND_URL}/?error=invalid_token`);
     }
 
     user.isVerified = true;
@@ -83,17 +83,16 @@ const verifyEmail = async (req, res) => {
 
     await user.save();
 
-    // ✅ redirect to live frontend
-    res.redirect("https://trackiva-phi.vercel.app/verify");
+    // ✅ Redirect to frontend verify page
+    res.redirect(`${process.env.FRONTEND_URL}/verify`);
 
   } catch (error) {
-    console.error(error);
-    res.redirect("https://trackiva-phi.vercel.app/?error=server_error");
+    console.error("Verify Email Error:", error);
+    res.redirect(`${process.env.FRONTEND_URL}/?error=server_error`);
   }
 };
 
-
-
+// ================= LOGIN =================
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -120,7 +119,6 @@ const loginUser = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // 🔥 FIX: send user data also
     res.json({
       message: "Login successful",
       token,
