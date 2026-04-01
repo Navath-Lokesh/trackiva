@@ -21,7 +21,8 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const verificationToken = crypto.randomBytes(32).toString("hex");
-    const verificationUrl = `http://localhost:5000/api/auth/verify-email/${verificationToken}`;
+    // const verificationUrl = `http://localhost:5000/api/auth/verify-email/${verificationToken}`;
+    const verificationUrl = `https://trackiva.onrender.com/api/auth/verify-email/${verificationToken}`;
     const newUser = new User({
       name,
       email,
@@ -74,7 +75,7 @@ const verifyEmail = async (req, res) => {
     const user = await User.findOne({ emailVerificationToken: token });
 
     if (!user) {
-      return res.redirect("http://localhost:5173/?error=invalid_token");
+      return res.redirect("https://trackiva-phi.vercel.app/?error=invalid_token");
     }
 
     user.isVerified = true;
@@ -82,14 +83,16 @@ const verifyEmail = async (req, res) => {
 
     await user.save();
 
-    // ✅ Redirect to frontend verify page
-    res.redirect("http://localhost:5173/verify");
+    // ✅ redirect to live frontend
+    res.redirect("https://trackiva-phi.vercel.app/verify");
 
   } catch (error) {
     console.error(error);
-    res.redirect("http://localhost:5173/?error=server_error");
+    res.redirect("https://trackiva-phi.vercel.app/?error=server_error");
   }
 };
+
+
 
 const loginUser = async (req, res) => {
   try {

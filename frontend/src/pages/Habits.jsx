@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createHabit, getHabits, deleteHabit } from "../api/habitApi";
-import { markHabit, getMontlyProgress } from "../api/progressApi";
+import { markHabit, getMonthlyProgress } from "../api/progressApi";
 
 export default function Habits() {
   const [title, setTitle] = useState("");
@@ -20,50 +20,76 @@ export default function Habits() {
     await fetchProgress();
   };
 
+  // ✅ Fetch habits (with error handling)
   const fetchHabits = async () => {
-    const res = await getHabits();
-    setHabits(res.data);
+    try {
+      const res = await getHabits();
+      setHabits(res.data);
+    } catch (err) {
+      console.log("Habit fetch error:", err);
+    }
   };
 
+  // ✅ Fetch progress (with error handling)
   const fetchProgress = async () => {
-    const res = await getMontlyProgress(month, year);
+    try {
+      const res = await getMonthlyProgress(month, year);
 
-    const map = {};
-    const progressData = Array.isArray(res.data) ? res.data : [];
+      const map = {};
+      const progressData = Array.isArray(res.data) ? res.data : [];
 
-    progressData.forEach((p) => {
-      const date = new Date(p.date).getDate();
-      map[`${p.habitId}-${date}`] = p.status;
-    });
+      progressData.forEach((p) => {
+        const date = new Date(p.date).getDate();
+        map[`${p.habitId}-${date}`] = p.status;
+      });
 
-    setProgressMap(map);
+      setProgressMap(map);
+    } catch (err) {
+      console.log("Progress fetch error:", err);
+    }
   };
 
+  // ✅ Add habit
   const handleAdd = async () => {
     if (!title.trim()) return;
 
-    await createHabit({ title });
-    setTitle("");
-    await fetchHabits();
+    try {
+      await createHabit({ title });
+      setTitle("");
+      await fetchHabits();
+    } catch (err) {
+      console.log("Add habit error:", err);
+    }
   };
 
+  // ✅ Mark habit
   const handleClick = async (habitId, day) => {
-    const date = new Date(year, month - 1, day);
+    try {
+      const date = new Date(year, month - 1, day);
 
-    await markHabit({
-      habitId,
-      date,
-      status: "done"
-    });
+      await markHabit({
+        habitId,
+        date,
+        status: "done"
+      });
 
-    await fetchProgress();
+      await fetchProgress();
+    } catch (err) {
+      console.log("Mark habit error:", err);
+    }
   };
 
+  // ✅ Delete habit
   const handleDelete = async (id) => {
-    await deleteHabit(id);
-    await fetchAll();
+    try {
+      await deleteHabit(id);
+      await fetchAll();
+    } catch (err) {
+      console.log("Delete habit error:", err);
+    }
   };
 
+  // ✅ Future check
   const isFuture = (day) => {
     const selectedDate = new Date(year, month - 1, day);
     const today = new Date();
@@ -78,19 +104,17 @@ export default function Habits() {
 
   return (
     <div className="p-6 bg-gray-900 text-white mt-2">
-
       <div className="bg-gray-800 p-6 rounded-2xl shadow border border-gray-700">
 
         {/* Top */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-semibold">Habits</h1>
-
           <div className="text-sm text-gray-400">
             Total habits: {habits.length}
           </div>
         </div>
 
-        {/* Add */}
+        {/* Add Habit */}
         <div className="flex gap-2 mb-6">
           <input
             value={title}
@@ -143,7 +167,7 @@ export default function Habits() {
 
             </div>
 
-            {/* Boxes */}
+            {/* Day Boxes */}
             <div className="flex gap-1.5 ml-1">
               {[...Array(daysInMonth)].map((_, i) => {
                 const day = i + 1;
@@ -159,7 +183,7 @@ export default function Habits() {
                   <div
                     key={i}
                     onClick={() =>
-                      !isFuture(day) && handleClick(habit._id, day)
+                      !isFuture(day) && !status && handleClick(habit._id, day)
                     }
                     className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold cursor-pointer transition ${bg}`}
                   >
@@ -179,7 +203,6 @@ export default function Habits() {
         ))}
 
       </div>
-
     </div>
   );
 }

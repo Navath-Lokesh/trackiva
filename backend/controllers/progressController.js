@@ -66,7 +66,7 @@ exports.markHabit = async (req, res) => {
 
 
 // ================= GET MONTHLY PROGRESS =================
-exports.getMontlyProgress = async (req, res) => {
+exports.getMonthlyProgress = async (req, res) => {
   try {
     const { month, year } = req.query;
 
