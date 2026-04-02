@@ -13,13 +13,27 @@ const sendEmail = async (to, subject, html) => {
     console.log("EMAIL_USER:", process.env.EMAIL_USER);
     console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Loaded ✅" : "Missing ❌");
 
+    // const transporter = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: process.env.EMAIL_USER, // ✅ now will work
+    //     pass: process.env.EMAIL_PASS  // ✅ now will work
+    //   }
+    // });
+
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER, // ✅ now will work
-        pass: process.env.EMAIL_PASS  // ✅ now will work
-      }
-    });
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // TLS
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
 
     const info = await transporter.sendMail({
       // ✅ UPDATED: Add branding name (IMPORTANT)
