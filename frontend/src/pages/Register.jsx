@@ -34,7 +34,8 @@ export default function Register() {
 
       await axios.post(`${API}/api/auth/register`, formattedData);
 
-      toast.success("Verification link sent to your email 📧");
+      // toast.success("Verification link sent to your email 📧");
+      toast.success("Verification done, Try to Login");
 
       setForm({
         name: "",
