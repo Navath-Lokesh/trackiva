@@ -18,10 +18,10 @@ const registerUser = async (req, res) => {
     // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 🔑 Generate verification token
+    // 🔑 Generate verification token (not used now)
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
-    // 🌐 Use ENV base URL (BEST PRACTICE)
+    // 🌐 Verification URL (not used now)
     const verificationUrl = `${process.env.BASE_URL}/api/auth/verify-email/${verificationToken}`;
 
     // 👤 Create user
@@ -30,13 +30,14 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       dateOfBirth,
-      emailVerificationToken: verificationToken,
-      isVerified: false // ✅ IMPORTANT FIX
+      emailVerificationToken: verificationToken, // (kept for future use)
+      isVerified: true // ✅ TEMP: auto verified
     });
 
     await newUser.save();
 
-    // 📧 Send verification email
+    // 📧 Email sending (DISABLED FOR NOW)
+    /*
     await sendEmail(
       email,
       "Verify your Trackiva account",
@@ -53,9 +54,11 @@ const registerUser = async (req, res) => {
       <p>${verificationUrl}</p>
       `
     );
+    */
 
     res.status(201).json({
-      message: "User registered successfully"
+      message: "User registered successfully 🚀",
+      note: "Email verification coming soon 🚀" // ✅ ADDED
     });
 
   } catch (error) {
@@ -103,9 +106,12 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
+    // ❌ TEMP DISABLED (since all users are verified)
+    /*
     if (!user.isVerified) {
       return res.status(400).json({ message: "Please verify your email first" });
     }
+    */
 
     const isMatch = await bcrypt.compare(password, user.password);
 
