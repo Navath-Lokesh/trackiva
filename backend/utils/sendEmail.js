@@ -31,7 +31,8 @@ const sendEmail = async (to, subject, html) => {
   },
   tls: {
     rejectUnauthorized: false
-  }
+  },
+  family: 4
 });
 
 
