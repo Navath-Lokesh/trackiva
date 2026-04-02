@@ -1,76 +1,31 @@
-const nodemailer = require("nodemailer");
-const dns = require("dns");
+const { Resend } = require("resend");
+require("dotenv").config();
 
-
-// ✅ ADDED: Load environment variables (IMPORTANT)
-require("dotenv").config(); // 🔥 MUST for accessing EMAIL_USER & EMAIL_PASS
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async (to, subject, html) => {
-
   try {
-
     console.log("📩 Attempting to send email to:", to);
 
-    // ✅ ADDED: Debug logs (to verify env is loaded)
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Loaded ✅" : "Missing ❌");
+    // Check API key
+    if (!process.env.RESEND_API_KEY) {
+      console.error("❌ RESEND_API_KEY is missing");
+      return;
+    }
 
-    // const transporter = nodemailer.createTransport({
-    //   service: "gmail",
-    //   auth: {
-    //     user: process.env.EMAIL_USER, // ✅ now will work
-    //     pass: process.env.EMAIL_PASS  // ✅ now will work
-    //   }
-    // });
-
-//     const transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com",
-//   port: 587,
-//   secure: false, // TLS
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASS
-//   },
-//   tls: {
-//     rejectUnauthorized: false
-//   },
-//   family: 4
-// });
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  lookup: (hostname, options, callback) => {
-    return dns.lookup(hostname, { family: 4 }, callback); // 🔥 FORCE IPv4
-  }
-});
-
-
-    const info = await transporter.sendMail({
-      // ✅ UPDATED: Add branding name (IMPORTANT)
-      from: `"Trackiva" <${process.env.EMAIL_USER}>`, // 🔥 shows Trackiva instead of raw email
-
-      to,
-      subject,
-      html
+    const response = await resend.emails.send({
+      from: "Trackiva <onboarding@resend.dev>",
+      to: [to],
+      subject: subject,
+      html: html,
     });
 
-    console.log("✅ Email sent:", info.response);
+    console.log("✅ Email sent successfully:", response);
 
   } catch (error) {
-
-    console.log("❌ Email error:", error.message);
-
+    console.error("❌ Email error:", error);
   }
-
 };
 
 module.exports = sendEmail;
