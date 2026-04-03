@@ -65,7 +65,8 @@ export default function Habits() {
   // ✅ Mark habit
   const handleClick = async (habitId, day) => {
     try {
-      const date = new Date(year, month - 1, day);
+      // const date = new Date(year, month - 1, day);
+      const date = new Date(Date.UTC(year, month - 1, day));
 
       await markHabit({
         habitId,
