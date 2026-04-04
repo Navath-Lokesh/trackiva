@@ -110,6 +110,9 @@ export default function Habits() {
         {/* Top */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-semibold">Habits</h1>
+          <a href="https://www.timeanddate.com/calendar/monthly.html?year=2026&month=4&country=35">
+          <h1 className="bg-green-200 border-black rounded text-black w-9">April</h1>
+          </a>
           <div className="text-sm text-gray-400">
             Total habits: {habits.length}
           </div>
