@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 // ================= REGISTER =================
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, dateOfBirth } = req.body;
+    const { name, email, password } = req.body;
 
     // 🔍 Check existing user
     const existingUser = await User.findOne({ email });
@@ -29,7 +29,7 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      dateOfBirth,
+      // dateOfBirth,
       emailVerificationToken: verificationToken, // (kept for future use)
       isVerified: true // ✅ TEMP: auto verified
     });

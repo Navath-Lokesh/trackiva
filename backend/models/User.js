@@ -18,9 +18,9 @@ const userSchema = new mongoose.Schema({
         required: true
     },
 
-    dateOfBirth: {
-        type: Date
-    },
+    // dateOfBirth: {
+    //     type: Date
+    // },
 
     profileImage: {
         type: String
@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    lastReminderDate:{
+        type: Date,
+        default: null
     },
 
     emailVerificationToken: {

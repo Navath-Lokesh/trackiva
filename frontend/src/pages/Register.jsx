@@ -41,7 +41,7 @@ export default function Register() {
         name: "",
         email: "",
         password: "",
-        dateOfBirth: ""
+        // dateOfBirth: ""
       });
 
       setTimeout(() => {
@@ -103,14 +103,14 @@ export default function Register() {
         />
 
         {/* Date of Birth */}
-        <input
+        {/* <input
           name="dateOfBirth"
           type="date"
           value={form.dateOfBirth}
           onChange={handleChange}
           required
           className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-gray-300 outline-none focus:ring-2 focus:ring-green-500"
-        />
+        /> */}
 
         {/* Button */}
         <button className="w-full bg-green-500 hover:bg-green-600 transition text-white p-3 rounded-lg font-semibold">
