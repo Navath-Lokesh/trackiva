@@ -30,10 +30,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    // lastReminderDate:{
-    //     type: Date,
-    //     default: null
-    // },
+    lastReminderDate:{
+        type: Date,
+        default: null
+    },
 
     emailVerificationToken: {
         type: String
