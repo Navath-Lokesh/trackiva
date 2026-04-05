@@ -14,8 +14,8 @@ const sendEmail = async (to, subject, html) => {
     console.log("📩 Sending email to:", to);
 
     const info = await transporter.sendMail({
-      // from: `Trackiva <${process.env.EMAIL_USER}>`,
-      from: "Trackiva <onboarding@resend.dev>",
+      from: `Trackiva <${process.env.EMAIL_USER}>`,
+      // from: "Trackiva <onboarding@resend.dev>",
       to: to,
       subject: subject,
       html: html,
