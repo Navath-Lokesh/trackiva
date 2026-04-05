@@ -6,7 +6,7 @@ const Progress = require("../models/Progress");
 const sendEmail = require("../utils/sendEmail");
 
 // 🔥  RUN ONCE EVERY DAY AT 8 PM
-cron.schedule("0 20 * * *", async () => {
+cron.schedule("0 12 * * *", async () => {
   console.log("⏰ Running reminder email job...");
 
   try {
@@ -20,15 +20,15 @@ cron.schedule("0 20 * * *", async () => {
     for (const user of users) {
       console.log("👤 Checking user:", user.email);
 
-      if(user.lastReminderDate){
-        const lastSent = new Date(user.lastReminderDate);
-        lastSent.setHours(0,0,0,0);
+      // if(user.lastReminderDate){
+      //   const lastSent = new Date(user.lastReminderDate);
+      //   lastSent.setHours(0,0,0,0);
 
-        if(lastSent.getTime() === today.getTime()){
-          console.log("Already sent reminder today");
-          continue;
-        }
-      }
+      //   if(lastSent.getTime() === today.getTime()){
+      //     console.log("Already sent reminder today");
+      //     continue;
+      //   }
+      // }
 
       const habits = await Habit.find({ userId: user._id });
 
