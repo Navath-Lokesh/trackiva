@@ -9,17 +9,16 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const [loading, setLoading] = useState(false); // ✅ NEW: loading state
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (loading) return; // ✅ NEW: prevent multiple clicks
+    if (loading) return;
 
-    setLoading(true); // ✅ NEW: start loading
+    setLoading(true);
 
     try {
       const res = await axios.post(`${API}/api/auth/login`, {
@@ -39,18 +38,19 @@ export default function Login() {
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid email or password ❌");
     } finally {
-      setLoading(false); // ✅ NEW: stop loading (important!)
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-900">
+    <div className="flex h-screen items-center justify-center bg-gray-900 px-4">
 
       <form
         onSubmit={handleLogin}
-        className="bg-gray-800 border border-gray-700 p-8 rounded-2xl shadow-lg w-80"
+        className="bg-gray-800 border border-gray-600 p-8 rounded-2xl shadow-xl shadow-black/30 w-full max-w-sm"
       >
 
+        {/* Title */}
         <h2 className="text-2xl font-bold text-white mb-6 text-center">
           Welcome Back 👋
         </h2>
@@ -60,9 +60,9 @@ export default function Login() {
           type="email"
           placeholder="Email"
           value={email}
-          disabled={loading} // ✅ NEW
+          disabled={loading}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-gray-800"
         />
 
         {/* Password */}
@@ -71,22 +71,21 @@ export default function Login() {
           placeholder="Password"
           autoComplete="current-password"
           value={password}
-          disabled={loading} // ✅ NEW
+          disabled={loading}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-gray-800"
         />
 
         {/* Button */}
         <button
-          disabled={loading} // ✅ NEW
+          disabled={loading}
           className={`w-full p-3 rounded-lg font-semibold transition flex items-center justify-center ${
             loading
-              ? "bg-blue-400 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600"
+              ? "bg-blue-500 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
           } text-white`}
         >
           {loading ? (
-            // ✅ NEW: spinner
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               Logging in...
@@ -101,7 +100,7 @@ export default function Login() {
           Don't have an account?{" "}
           <span
             className="text-blue-400 cursor-pointer font-medium hover:underline"
-            onClick={() => !loading && navigate("/register")} // ✅ NEW
+            onClick={() => !loading && navigate("/register")}
           >
             Register
           </span>
