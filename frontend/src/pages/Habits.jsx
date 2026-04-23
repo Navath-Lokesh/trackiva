@@ -20,7 +20,6 @@ export default function Habits() {
     await fetchProgress();
   };
 
-  // ✅ Fetch habits (with error handling)
   const fetchHabits = async () => {
     try {
       const res = await getHabits();
@@ -30,7 +29,6 @@ export default function Habits() {
     }
   };
 
-  // ✅ Fetch progress (with error handling)
   const fetchProgress = async () => {
     try {
       const res = await getMonthlyProgress(month, year);
@@ -49,7 +47,6 @@ export default function Habits() {
     }
   };
 
-  // ✅ Add habit
   const handleAdd = async () => {
     if (!title.trim()) return;
 
@@ -62,10 +59,8 @@ export default function Habits() {
     }
   };
 
-  // ✅ Mark habit
   const handleClick = async (habitId, day) => {
     try {
-      // const date = new Date(year, month - 1, day);
       const date = new Date(Date.UTC(year, month - 1, day));
 
       await markHabit({
@@ -74,13 +69,13 @@ export default function Habits() {
         status: "done"
       });
 
-      await fetchProgress();
+      // await fetchProgress();
+      await fetchAll();
     } catch (err) {
       console.log("Mark habit error:", err);
     }
   };
 
-  // ✅ Delete habit
   const handleDelete = async (id) => {
     try {
       await deleteHabit(id);
@@ -101,6 +96,18 @@ export default function Habits() {
     return selectedDate > today;
   };
 
+  // ✅ NEW: Check if date is BEFORE habit creation
+  const isBeforeCreation = (habitCreatedAt, day) => {
+    const selectedDate = new Date(year, month - 1, day);
+    const createdDate = new Date(habitCreatedAt);
+
+    // normalize time
+    selectedDate.setHours(0, 0, 0, 0);
+    createdDate.setHours(0, 0, 0, 0);
+
+    return selectedDate < createdDate;
+  };
+
   const daysInMonth = new Date(year, month, 0).getDate();
 
   return (
@@ -110,9 +117,9 @@ export default function Habits() {
         {/* Top */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-xl font-semibold">Habits</h1>
-          <a href="https://www.timeanddate.com/calendar/monthly.html?year=2026&month=4&country=35">
-          <h1 className="bg-green-200 border-black rounded text-black w-9">April</h1>
-          </a>
+          <h1 className="bg-green-200 border-black rounded text-black w-9">
+            April
+          </h1>
           <div className="text-sm text-gray-400">
             Total habits: {habits.length}
           </div>
@@ -134,7 +141,7 @@ export default function Habits() {
           </button>
         </div>
 
-        {/* Header Row */}
+        {/* Header */}
         <div className="flex items-center mb-3">
           <div className="w-32 font-medium mr-3 text-gray-300">Habit</div>
 
@@ -153,7 +160,6 @@ export default function Habits() {
 
             {/* Habit Info */}
             <div className="w-32 flex items-center gap-2 bg-gray-700 px-2 py-1 rounded-lg border border-gray-600">
-
               <div className="w-5 h-5 bg-green-500 text-white flex items-center justify-center rounded-full text-xs">
                 ✔
               </div>
@@ -168,7 +174,6 @@ export default function Habits() {
               >
                 <span className="text-white font-bold">X</span>
               </button>
-
             </div>
 
             {/* Day Boxes */}
@@ -178,6 +183,10 @@ export default function Habits() {
                 const key = `${habit._id}-${day}`;
                 const status = progressMap[key];
 
+                // ✅ NEW: check both conditions
+                const future = isFuture(day);
+                const beforeCreation = isBeforeCreation(habit.createdAt, day);
+
                 let bg = "bg-gray-700";
 
                 if (status === "done") bg = "bg-green-500";
@@ -186,18 +195,27 @@ export default function Habits() {
                 return (
                   <div
                     key={i}
-                    onClick={() =>
-                      !isFuture(day) && !status && handleClick(habit._id, day)
-                    }
-                    className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold cursor-pointer transition ${bg}`}
+                    onClick={() => {
+                      // ✅ UPDATED: prevent click if locked
+                      if (future || beforeCreation || status) return;
+                      handleClick(habit._id, day);
+                    }}
+                    className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold transition ${
+                      future || beforeCreation
+                        ? "bg-gray-600 cursor-not-allowed"
+                        : "cursor-pointer"
+                    } ${bg}`}
                   >
-                    {isFuture(day)
-                      ? "🔒"
-                      : status === "done"
-                      ? "✔"
-                      : status === "missed"
-                      ? "✖"
-                      : ""}
+                    {
+                      // ✅ UPDATED: show lock for both cases
+                      future || beforeCreation
+                        ? "🔒"
+                        : status === "done"
+                        ? "✔"
+                        : status === "missed"
+                        ? "✖"
+                        : ""
+                    }
                   </div>
                 );
               })}
