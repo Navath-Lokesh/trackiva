@@ -143,9 +143,9 @@ export default function Habits() {
         </div>
 
         {/* Scroll Wrapper 🔥 */}
-        <div className="overflow-x-auto"> {/* ✅ MAIN FIX */}
+        <div className="overflow-x-auto w-full"> {/* ✅ MAIN FIX */}
 
-          <div style={{ minWidth: "650px" }}> {/* ✅ FORCE SCROLL */}
+            <div className="min-w-[600px]"> {/* ✅ FORCE SCROLL */}
 
             {/* Header */}
             <div className="flex items-center mb-3">
