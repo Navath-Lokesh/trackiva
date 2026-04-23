@@ -43,12 +43,53 @@ export default function Dashboard() {
   };
 
   if (!stats) {
-    return (
-      <div className="flex justify-center items-center h-screen text-lg text-gray-400">
-        Loading...
+  return (
+    <div className="p-4 sm:p-6 bg-gray-900 min-h-screen text-white animate-pulse">
+
+      {/* Header Skeleton */}
+      <div className="h-6 w-40 bg-gray-700 rounded mb-6"></div>
+
+      {/* Greeting */}
+      <div className="h-5 w-64 bg-gray-700 rounded mb-2"></div>
+      <div className="h-4 w-80 bg-gray-800 rounded mb-6"></div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="bg-gray-800 p-4 sm:p-6 rounded-xl border border-gray-700"
+          >
+            <div className="h-4 w-32 bg-gray-700 rounded mb-3"></div>
+            <div className="h-6 w-16 bg-gray-600 rounded mb-3"></div>
+            <div className="h-2 w-full bg-gray-700 rounded"></div>
+          </div>
+        ))}
+
       </div>
-    );
-  }
+
+      {/* Habits Skeleton */}
+      <div className="mt-8">
+        <div className="h-5 w-32 bg-gray-700 rounded mb-4"></div>
+
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-2">
+              <div className="w-32 h-6 bg-gray-700 rounded"></div>
+              <div className="flex gap-1">
+                {[...Array(10)].map((_, j) => (
+                  <div key={j} className="w-5 h-5 bg-gray-800 rounded"></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  );
+}
 
   return (
     <div className="p-4 sm:p-6 bg-gray-900 min-h-screen text-white overflow-x-hidden"> {/* ✅ FIXED overflow */}
