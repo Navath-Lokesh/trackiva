@@ -66,7 +66,7 @@ export default function Habits() {
       await markHabit({
         habitId,
         date,
-        status: "done"
+        status: "done",
       });
 
       await fetchAll();
@@ -107,12 +107,12 @@ export default function Habits() {
   const daysInMonth = new Date(year, month, 0).getDate();
 
   return (
-    <div className="p-4 sm:p-6 bg-gray-900 text-white mt-2 overflow-x-hidden"> {/* ✅ FIX */}
+    <div className="p-4 sm:p-6 bg-gray-900 text-white mt-2 overflow-x-hidden">
 
       <div className="bg-gray-800 p-4 sm:p-6 rounded-2xl shadow border border-gray-700">
 
         {/* Top */}
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2"> {/* ✅ RESPONSIVE */}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
           <h1 className="text-lg sm:text-xl font-semibold">Habits</h1>
 
           <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default function Habits() {
         </div>
 
         {/* Add Habit */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-6"> {/* ✅ RESPONSIVE */}
+        <div className="flex flex-col sm:flex-row gap-2 mb-6">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -142,31 +142,38 @@ export default function Habits() {
           </button>
         </div>
 
-        {/* Scroll Wrapper 🔥 */}
-        <div className="overflow-x-auto w-full"> {/* ✅ MAIN FIX */}
+        {/* Scroll */}
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-[700px]">
 
-            <div className="min-w-[600px]"> {/* ✅ FORCE SCROLL */}
+            {/* HEADER ✅ GRID FIX */}
+            <div
+              className="grid items-center mb-3"
+              style={{
+                gridTemplateColumns: `120px repeat(${daysInMonth}, minmax(24px, 1fr))`,
+              }}
+            >
+              <div className="text-gray-300 font-medium">Habit</div>
 
-            {/* Header */}
-            <div className="flex items-center mb-3">
-              <div className="w-32 font-medium mr-3 text-gray-300">Habit</div>
-
-              <div className="flex gap-1.5 text-xs text-gray-400">
-                {[...Array(daysInMonth)].map((_, i) => (
-                  <div key={i} className="w-6 text-center">
-                    {i + 1}
-                  </div>
-                ))}
-              </div>
+              {[...Array(daysInMonth)].map((_, i) => (
+                <div key={i} className="text-center text-xs text-gray-400">
+                  {i + 1}
+                </div>
+              ))}
             </div>
 
-            {/* Habit Rows */}
+            {/* ROWS ✅ SAME GRID */}
             {habits.map((habit) => (
-              <div key={habit._id} className="flex gap-2 items-center mb-2">
-
-                {/* Habit Info */}
-                <div className="w-32 flex items-center gap-2 bg-gray-700 px-2 py-1 rounded-lg border border-gray-600 shrink-0">
-                  <div className="w-5 h-5 bg-green-500 text-white flex items-center justify-center rounded-full text-xs">
+              <div
+                key={habit._id}
+                className="grid items-center mb-2"
+                style={{
+                  gridTemplateColumns: `120px repeat(${daysInMonth}, minmax(24px, 1fr))`,
+                }}
+              >
+                {/* Habit */}
+                <div className="flex items-center gap-2 bg-gray-700 px-2 py-1 rounded-lg border border-gray-600">
+                  <div className="w-5 h-5 bg-green-500 flex items-center justify-center rounded-full text-xs">
                     ✔
                   </div>
 
@@ -176,58 +183,55 @@ export default function Habits() {
 
                   <button
                     onClick={() => handleDelete(habit._id)}
-                    className="ml-auto bg-red-500 hover:bg-red-600 transition w-5 h-5 rounded text-xs flex items-center justify-center"
+                    className="ml-auto bg-red-500 hover:bg-red-600 w-5 h-5 rounded text-xs flex items-center justify-center"
                   >
-                    <span className="text-white font-bold">X</span>
+                    X
                   </button>
                 </div>
 
                 {/* Days */}
-                <div className="flex gap-1.5 ml-1">
-                  {[...Array(daysInMonth)].map((_, i) => {
-                    const day = i + 1;
-                    const key = `${habit._id}-${day}`;
-                    const status = progressMap[key];
+                {[...Array(daysInMonth)].map((_, i) => {
+                  const day = i + 1;
+                  const key = `${habit._id}-${day}`;
+                  const status = progressMap[key];
 
-                    const future = isFuture(day);
-                    const beforeCreation = isBeforeCreation(habit.createdAt, day);
+                  const future = isFuture(day);
+                  const beforeCreation = isBeforeCreation(
+                    habit.createdAt,
+                    day
+                  );
 
-                    let bg = "bg-gray-700";
-                    if (status === "done") bg = "bg-green-500";
-                    else if (status === "missed") bg = "bg-orange-400";
+                  let bg = "bg-gray-700";
+                  if (status === "done") bg = "bg-green-500";
+                  else if (status === "missed") bg = "bg-orange-400";
 
-                    return (
-                      <div
-                        key={i}
-                        onClick={() => {
-                          if (future || beforeCreation || status) return;
-                          handleClick(habit._id, day);
-                        }}
-                        className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold ${
-                          future || beforeCreation
-                            ? "bg-gray-600 cursor-not-allowed"
-                            : "cursor-pointer"
-                        } ${bg}`}
-                      >
-                        {future || beforeCreation
-                          ? "🔒"
-                          : status === "done"
-                          ? "✔"
-                          : status === "missed"
-                          ? "✖"
-                          : ""}
-                      </div>
-                    );
-                  })}
-                </div>
-
+                  return (
+                    <div
+                      key={i}
+                      onClick={() => {
+                        if (future || beforeCreation || status) return;
+                        handleClick(habit._id, day);
+                      }}
+                      className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold mx-auto ${
+                        future || beforeCreation
+                          ? "bg-gray-600 cursor-not-allowed"
+                          : "cursor-pointer"
+                      } ${bg}`}
+                    >
+                      {future || beforeCreation
+                        ? "🔒"
+                        : status === "done"
+                        ? "✔"
+                        : status === "missed"
+                        ? "✖"
+                        : ""}
+                    </div>
+                  );
+                })}
               </div>
             ))}
-
           </div>
-
         </div>
-
       </div>
     </div>
   );
