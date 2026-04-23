@@ -69,7 +69,6 @@ export default function Habits() {
         status: "done"
       });
 
-      // await fetchProgress();
       await fetchAll();
     } catch (err) {
       console.log("Mark habit error:", err);
@@ -85,7 +84,6 @@ export default function Habits() {
     }
   };
 
-  // ✅ Future check
   const isFuture = (day) => {
     const selectedDate = new Date(year, month - 1, day);
     const today = new Date();
@@ -96,12 +94,10 @@ export default function Habits() {
     return selectedDate > today;
   };
 
-  // ✅ NEW: Check if date is BEFORE habit creation
   const isBeforeCreation = (habitCreatedAt, day) => {
     const selectedDate = new Date(year, month - 1, day);
     const createdDate = new Date(habitCreatedAt);
 
-    // normalize time
     selectedDate.setHours(0, 0, 0, 0);
     createdDate.setHours(0, 0, 0, 0);
 
@@ -111,118 +107,126 @@ export default function Habits() {
   const daysInMonth = new Date(year, month, 0).getDate();
 
   return (
-    <div className="p-6 bg-gray-900 text-white mt-2">
-      <div className="bg-gray-800 p-6 rounded-2xl shadow border border-gray-700">
+    <div className="p-4 sm:p-6 bg-gray-900 text-white mt-2 overflow-x-hidden"> {/* ✅ FIX */}
+
+      <div className="bg-gray-800 p-4 sm:p-6 rounded-2xl shadow border border-gray-700">
 
         {/* Top */}
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-semibold">Habits</h1>
-          <h1 className="bg-green-200 border-black rounded text-black w-9">
-            April
-          </h1>
-          <div className="text-sm text-gray-400">
-            Total habits: {habits.length}
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2"> {/* ✅ RESPONSIVE */}
+          <h1 className="text-lg sm:text-xl font-semibold">Habits</h1>
+
+          <div className="flex items-center gap-2">
+            <h1 className="bg-green-200 rounded text-black px-2 text-sm">
+              April
+            </h1>
+
+            <div className="text-xs sm:text-sm text-gray-400">
+              Total: {habits.length}
+            </div>
           </div>
         </div>
 
         {/* Add Habit */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-col sm:flex-row gap-2 mb-6"> {/* ✅ RESPONSIVE */}
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="New habit..."
-            className="bg-gray-700 border border-gray-600 text-white p-2 rounded-lg w-56 outline-none placeholder-gray-400"
+            className="bg-gray-700 border border-gray-600 text-white p-2 rounded-lg w-full sm:w-56 outline-none placeholder-gray-400"
           />
           <button
             onClick={handleAdd}
-            className="bg-blue-500 hover:bg-blue-600 transition text-white px-4 py-2 rounded-lg"
+            className="bg-blue-500 hover:bg-blue-600 transition text-white px-4 py-2 rounded-lg w-full sm:w-auto"
           >
             Add
           </button>
         </div>
 
-        {/* Header */}
-        <div className="flex items-center mb-3">
-          <div className="w-32 font-medium mr-3 text-gray-300">Habit</div>
+        {/* Scroll Wrapper 🔥 */}
+        <div className="overflow-x-auto"> {/* ✅ MAIN FIX */}
 
-          <div className="flex gap-1.5 text-xs text-gray-400">
-            {[...Array(daysInMonth)].map((_, i) => (
-              <div key={i} className="w-6 text-center">
-                {i + 1}
+          <div style={{ minWidth: "650px" }}> {/* ✅ FORCE SCROLL */}
+
+            {/* Header */}
+            <div className="flex items-center mb-3">
+              <div className="w-32 font-medium mr-3 text-gray-300">Habit</div>
+
+              <div className="flex gap-1.5 text-xs text-gray-400">
+                {[...Array(daysInMonth)].map((_, i) => (
+                  <div key={i} className="w-6 text-center">
+                    {i + 1}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Habit Rows */}
+            {habits.map((habit) => (
+              <div key={habit._id} className="flex gap-2 items-center mb-2">
+
+                {/* Habit Info */}
+                <div className="w-32 flex items-center gap-2 bg-gray-700 px-2 py-1 rounded-lg border border-gray-600 shrink-0">
+                  <div className="w-5 h-5 bg-green-500 text-white flex items-center justify-center rounded-full text-xs">
+                    ✔
+                  </div>
+
+                  <span className="text-sm truncate text-gray-200">
+                    {habit.title}
+                  </span>
+
+                  <button
+                    onClick={() => handleDelete(habit._id)}
+                    className="ml-auto bg-red-500 hover:bg-red-600 transition w-5 h-5 rounded text-xs flex items-center justify-center"
+                  >
+                    <span className="text-white font-bold">X</span>
+                  </button>
+                </div>
+
+                {/* Days */}
+                <div className="flex gap-1.5 ml-1">
+                  {[...Array(daysInMonth)].map((_, i) => {
+                    const day = i + 1;
+                    const key = `${habit._id}-${day}`;
+                    const status = progressMap[key];
+
+                    const future = isFuture(day);
+                    const beforeCreation = isBeforeCreation(habit.createdAt, day);
+
+                    let bg = "bg-gray-700";
+                    if (status === "done") bg = "bg-green-500";
+                    else if (status === "missed") bg = "bg-orange-400";
+
+                    return (
+                      <div
+                        key={i}
+                        onClick={() => {
+                          if (future || beforeCreation || status) return;
+                          handleClick(habit._id, day);
+                        }}
+                        className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold ${
+                          future || beforeCreation
+                            ? "bg-gray-600 cursor-not-allowed"
+                            : "cursor-pointer"
+                        } ${bg}`}
+                      >
+                        {future || beforeCreation
+                          ? "🔒"
+                          : status === "done"
+                          ? "✔"
+                          : status === "missed"
+                          ? "✖"
+                          : ""}
+                      </div>
+                    );
+                  })}
+                </div>
+
               </div>
             ))}
+
           </div>
+
         </div>
-
-        {/* Habit Rows */}
-        {habits.map((habit) => (
-          <div key={habit._id} className="flex gap-2 items-center mb-2">
-
-            {/* Habit Info */}
-            <div className="w-32 flex items-center gap-2 bg-gray-700 px-2 py-1 rounded-lg border border-gray-600">
-              <div className="w-5 h-5 bg-green-500 text-white flex items-center justify-center rounded-full text-xs">
-                ✔
-              </div>
-
-              <span className="text-sm truncate text-gray-200">
-                {habit.title}
-              </span>
-
-              <button
-                onClick={() => handleDelete(habit._id)}
-                className="ml-auto bg-red-500 hover:bg-red-600 transition w-5 h-5 rounded text-xs flex items-center justify-center"
-              >
-                <span className="text-white font-bold">X</span>
-              </button>
-            </div>
-
-            {/* Day Boxes */}
-            <div className="flex gap-1.5 ml-1">
-              {[...Array(daysInMonth)].map((_, i) => {
-                const day = i + 1;
-                const key = `${habit._id}-${day}`;
-                const status = progressMap[key];
-
-                // ✅ NEW: check both conditions
-                const future = isFuture(day);
-                const beforeCreation = isBeforeCreation(habit.createdAt, day);
-
-                let bg = "bg-gray-700";
-
-                if (status === "done") bg = "bg-green-500";
-                else if (status === "missed") bg = "bg-orange-400";
-
-                return (
-                  <div
-                    key={i}
-                    onClick={() => {
-                      // ✅ UPDATED: prevent click if locked
-                      if (future || beforeCreation || status) return;
-                      handleClick(habit._id, day);
-                    }}
-                    className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold transition ${
-                      future || beforeCreation
-                        ? "bg-gray-600 cursor-not-allowed"
-                        : "cursor-pointer"
-                    } ${bg}`}
-                  >
-                    {
-                      // ✅ UPDATED: show lock for both cases
-                      future || beforeCreation
-                        ? "🔒"
-                        : status === "done"
-                        ? "✔"
-                        : status === "missed"
-                        ? "✖"
-                        : ""
-                    }
-                  </div>
-                );
-              })}
-            </div>
-
-          </div>
-        ))}
 
       </div>
     </div>

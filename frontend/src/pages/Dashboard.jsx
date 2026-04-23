@@ -51,36 +51,29 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
+    <div className="p-4 sm:p-6 bg-gray-900 min-h-screen text-white overflow-x-hidden"> {/* ✅ FIXED overflow */}
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-
-        {/* <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 transition text-white px-4 py-2 rounded-lg"
-        >
-          Logout
-        </button> */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
       </div>
 
       {/* USER GREETING */}
-      <h1 className="text-3xl font-bold mb-2">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-2">
         Welcome, {username} 👋
       </h1>
 
-      <p className="text-gray-400 mb-6">
+      <p className="text-gray-400 mb-6 text-sm sm:text-base">
         Track your habits and boost your productivity with Trackiva.
       </p>
 
       {/* STATS */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
 
         {/* TODAY */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-          <h2 className="text-gray-400">Today's Progress</h2>
-          <p className="text-3xl font-bold text-green-400">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-xl shadow border border-gray-700">
+          <h2 className="text-gray-400 text-sm">Today's Progress</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-green-400">
             {stats.todayPercentage}%
           </p>
 
@@ -93,9 +86,9 @@ export default function Dashboard() {
         </div>
 
         {/* WEEKLY */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-          <h2 className="text-gray-400">Weekly Progress</h2>
-          <p className="text-3xl font-bold text-blue-400">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-xl shadow border border-gray-700">
+          <h2 className="text-gray-400 text-sm">Weekly Progress</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-blue-400">
             {stats.weeklyPercentage || 0}%
           </p>
 
@@ -108,9 +101,9 @@ export default function Dashboard() {
         </div>
 
         {/* MONTHLY */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow border border-gray-700">
-          <h2 className="text-gray-400">Monthly Progress</h2>
-          <p className="text-3xl font-bold text-orange-400">
+        <div className="bg-gray-800 p-4 sm:p-6 rounded-xl shadow border border-gray-700">
+          <h2 className="text-gray-400 text-sm">Monthly Progress</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-orange-400">
             {stats.monthlyPercentage || 0}%
           </p>
 
@@ -125,24 +118,28 @@ export default function Dashboard() {
       </div>
 
       {/* HABITS */}
-      <div className="mt-8">
+      <div className="mt-6 sm:mt-8">
         <Habits />
       </div>
 
       {/* ANALYTICS + HEATMAP + CHAT */}
-      <div className="flex gap-6 mt-8">
+      <div className="flex flex-col lg:flex-row gap-6 mt-6 sm:mt-8">
 
-        <div className="flex-1">
+        {/* LEFT */}
+        <div className="w-full lg:flex-1 min-w-0"> {/* ✅ FIX prevents overflow */}
           <Analytics />
         </div>
 
-        <div className="flex flex-col gap-4">
+        {/* RIGHT */}
+        <div className="w-full lg:w-[300px] flex flex-col gap-4 shrink-0"> {/* ✅ FIX alignment */}
 
-          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
+          {/* HEATMAP */}
+          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 w-full"> {/* ✅ FIX width */}
             <Heatmap />
           </div>
 
-          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700">
+          {/* CHAT */}
+          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 w-full">
             <Chat />
           </div>
 

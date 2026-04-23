@@ -10,33 +10,45 @@ export default function Heatmap() {
   }, []);
 
   const fetchHeatmap = async () => {
-    const res = await getHeatmap();
-    setData(res.data);
+    try {
+      const res = await getHeatmap();
+      setData(res.data || []);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getColor = (count) => {
-    if (count === 0) return "bg-gray-700";     // dark empty
-    if (count < 2) return "bg-green-400";
+    if (count === 0) return "bg-gray-700";
+    if (count < 2) return "bg-green-250";
     if (count < 4) return "bg-green-500";
     return "bg-green-600";
   };
 
   return (
-    <div className="bg-gray-800 border border-gray-700 p-4 rounded-xl shadow w-[370px] h-[180px]">
+    <div className="w-full"> {/* ✅ FIX: remove fixed width */}
 
-      <h2 className="text-lg font-semibold mb-4 text-white">
+      {/* Title */}
+      <h2 className="text-sm sm:text-base font-semibold mb-3 text-white">
         Consistency Heatmap
       </h2>
 
-      <div className="grid grid-cols-10 gap-2">
+      {/* Grid */}
+      <div className="grid grid-cols-7 gap-1 justify-start"> {/* ✅ FIX: 7 cols */}
 
-        {data.map((item, index) => (
-          <div
-            key={index}
-            className={`w-6 h-6 rounded ${getColor(item.count)} transition`}
-            title={`${item.date} → ${item.count}`}
-          />
-        ))}
+        {data.length === 0 ? (
+          <p className="text-gray-400 text-xs col-span-7">
+            No data yet
+          </p>
+        ) : (
+          data.map((item, index) => (
+            <div
+              key={index}
+              className={`w-4 h-4 sm:w-5 sm:h-5 rounded ${getColor(item.count)} transition`}
+              title={`${item.date} → ${item.count}`}
+            />
+          ))
+        )}
 
       </div>
 
