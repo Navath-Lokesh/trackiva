@@ -31,13 +31,13 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
       // dateOfBirth,
       emailVerificationToken: verificationToken, // (kept for future use)
-      isVerified: true // ✅ TEMP: auto verified
+      isVerified: false // ✅ TEMP: auto verified
     });
 
     await newUser.save();
 
     // 📧 Email sending (DISABLED FOR NOW)
-    /*
+    
     await sendEmail(
       email,
       "Verify your Trackiva account",
@@ -54,7 +54,7 @@ const registerUser = async (req, res) => {
       <p>${verificationUrl}</p>
       `
     );
-    */
+    
 
     res.status(201).json({
       message: "User registered successfully 🚀",
