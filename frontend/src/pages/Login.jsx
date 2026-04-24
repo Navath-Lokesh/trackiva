@@ -76,9 +76,18 @@ export default function Login() {
           onSubmit={handleLogin}
           className="bg-gray-800 border border-gray-600 p-8 rounded-2xl shadow-xl shadow-black/30"
         >
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            Welcome Back 👋
-          </h2>
+          <div className="text-center mb-6">
+  <h1 className="text-3xl font-bold text-green-400 mb-1">
+    Trackiva
+  </h1>
+  <p className="text-gray-400 text-sm">
+    Build habits. Stay consistent.
+  </p>
+
+  <h2 className="text-xl font-semibold text-white mt-4">
+    Welcome Back 👋
+  </h2>
+</div>
 
           <input
             type="email"
@@ -148,6 +157,18 @@ export default function Login() {
   }`}
 >
   <DemoAccount onDemoLogin={handleDemoLogin} />
+</div>
+
+<div className="mt-6 text-center text-xs text-gray-400">
+  <p>
+    Can't login or not receiving verification email?
+  </p>
+  <p>
+    Contact support:{" "}
+    <span className="text-blue-400">
+      trackiva.app@gmail.com
+    </span>
+  </p>
 </div>
 
       </div>
