@@ -2,20 +2,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import DemoAccount from "../components/demoAccount";
 
 export default function Login() {
-
   const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showDemo, setShowDemo] = useState(false); // ✅ toggle state
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     if (loading) return;
 
     setLoading(true);
@@ -23,7 +23,7 @@ export default function Login() {
     try {
       const res = await axios.post(`${API}/api/auth/login`, {
         email,
-        password
+        password,
       });
 
       localStorage.setItem("token", res.data.token);
@@ -34,7 +34,6 @@ export default function Login() {
       setTimeout(() => {
         navigate("/dashboard");
       }, 1500);
-
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid email or password ❌");
     } finally {
@@ -42,72 +41,116 @@ export default function Login() {
     }
   };
 
+  const handleDemoLogin = async () => {
+    if (loading) return;
+
+    setLoading(true);
+
+    try {
+      const res = await axios.post(`${API}/api/auth/login`, {
+        email: "demo@trackiva.com",
+        password: "demo123",
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      toast.success("Logged in as Demo User 🚀");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
+    } catch (err) {
+      toast.error("Demo login failed ❌");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-900 px-4">
-
-      <form
-        onSubmit={handleLogin}
-        className="bg-gray-800 border border-gray-600 p-8 rounded-2xl shadow-xl shadow-black/30 w-full max-w-sm"
-      >
-
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">
-          Welcome Back 👋
-        </h2>
-
-        {/* Email */}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          disabled={loading}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-gray-800"
-        />
-
-        {/* Password */}
-        <input
-          type="password"
-          placeholder="Password"
-          autoComplete="current-password"
-          value={password}
-          disabled={loading}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-gray-800"
-        />
-
-        {/* Button */}
-        <button
-          disabled={loading}
-          className={`w-full p-3 rounded-lg font-semibold transition flex items-center justify-center ${
-            loading
-              ? "bg-blue-500 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          } text-white`}
+    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4">
+      <div className="w-full max-w-sm">
+        
+        {/* Login Form */}
+        <form
+          onSubmit={handleLogin}
+          className="bg-gray-800 border border-gray-600 p-8 rounded-2xl shadow-xl shadow-black/30"
         >
-          {loading ? (
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Logging in...
-            </div>
-          ) : (
-            "Login"
-          )}
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            Welcome Back 👋
+          </h2>
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            disabled={loading}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-gray-800"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            autoComplete="current-password"
+            value={password}
+            disabled={loading}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-gray-800"
+          />
+
+          <button
+            disabled={loading}
+            className={`w-full p-3 rounded-lg font-semibold transition flex items-center justify-center ${
+              loading
+                ? "bg-blue-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            } text-white`}
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
+          </button>
+
+          <p className="text-sm mt-5 text-center text-gray-400">
+            Don't have an account?{" "}
+            <span
+              className="text-blue-400 cursor-pointer font-medium hover:underline"
+              onClick={() => !loading && navigate("/register")}
+            >
+              Register
+            </span>
+          </p>
+        </form>
+
+        {/* ✅ Toggle Button */}
+        <button
+          onClick={() => setShowDemo(!showDemo)}
+          className="mt-4 w-full text-sm text-green-400 hover:underline"
+        >
+          {showDemo ? "Hide Demo Account" : "🚀 Try Demo Account"}
         </button>
 
-        {/* Register */}
-        <p className="text-sm mt-5 text-center text-gray-400">
-          Don't have an account?{" "}
-          <span
-            className="text-blue-400 cursor-pointer font-medium hover:underline"
-            onClick={() => !loading && navigate("/register")}
-          >
-            Register
-          </span>
-        </p>
+        {/* ✅ Show only when clicked */}
+        {/* {showDemo && (
+          <DemoAccount onDemoLogin={handleDemoLogin} />
+        )} */}
 
-      </form>
+        {/* ✅ Animated Wrapper */}
+<div
+  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+    showDemo ? "max-h-96 opacity-100 mt-4" : "max-h-0 opacity-0"
+  }`}
+>
+  <DemoAccount onDemoLogin={handleDemoLogin} />
+</div>
 
+      </div>
     </div>
   );
 }

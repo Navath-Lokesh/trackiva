@@ -102,16 +102,16 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    // if (!user) {
+    //   return res.status(400).json({ message: "Invalid email or password" });
+    // }
 
     // ❌ TEMP DISABLED (since all users are verified)
-    /*
+    
     if (!user.isVerified) {
       return res.status(400).json({ message: "Please verify your email first" });
     }
-    */
+    
 
     const isMatch = await bcrypt.compare(password, user.password);
 
