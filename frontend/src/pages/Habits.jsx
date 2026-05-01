@@ -117,7 +117,7 @@ export default function Habits() {
 
           <div className="flex items-center gap-2">
             <h1 className="bg-green-200 rounded text-black px-2 text-sm">
-              April
+              May
             </h1>
 
             <div className="text-xs sm:text-sm text-gray-400">
