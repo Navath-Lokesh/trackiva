@@ -71,6 +71,12 @@ cron.schedule("0 20 * * *", async () => {
         // ✅ FIXED sendEmail format
         await sendEmail(user.email, subject, html);
 
+await User.findByIdAndUpdate(user._id, {
+  lastReminderDate: new Date(),
+});
+
+console.log("✅ Email sent successfully!");
+
         console.log("✅ Email sent successfully!");
       } else {
         console.log("✅ All habits completed. No email sent.");
