@@ -3,7 +3,7 @@ const cron = require("node-cron");
 const Habit = require("../models/Habit");
 const Progress = require("../models/Progress");
 
-cron.schedule("30 10 * * *", async () => {
+cron.schedule("58 23 * * *", async () => {
   console.log("Running auto-miss job...");
 
   try {
