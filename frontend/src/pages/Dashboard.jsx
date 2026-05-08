@@ -98,9 +98,12 @@ const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
     {showBugBanner && (
       <div className="w-full bg-red-500/10 border-b border-red-400/30 text-red-300 text-sm flex justify-between items-center px-4 py-2">
         <span>
-          ⚠️ We recently fixed a habit tracking bug that incorrectly marked some habits as missed.
-          Please delete your existing habits and add them again to continue tracking properly.
-          We apologize for the inconvenience and appreciate your support while Trackiva continues improving.
+          <h4>
+         ⚠️ We sincerely apologize — we recently fixed a habit tracking bug that incorrectly marked some habits as missed for some users. 
+      If your habits are working normally, you can safely ignore this message. 
+      However, to avoid any confusion and ensure accurate tracking from now on, we personally recommend deleting your existing habits and creating them again for a fresh start. 
+      Thank you for your patience and support while Trackiva continues improving.
+      </h4>
         </span>
 
         <button
