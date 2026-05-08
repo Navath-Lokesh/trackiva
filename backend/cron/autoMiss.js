@@ -3,7 +3,7 @@ const cron = require("node-cron");
 const Habit = require("../models/Habit");
 const Progress = require("../models/Progress");
 
-cron.schedule("18 10 * * *", async () => {
+cron.schedule("24 10 * * *", async () => {
   console.log("Running auto-miss job...");
 
   try {
@@ -25,7 +25,6 @@ cron.schedule("18 10 * * *", async () => {
           date: today
         });
 
-        //  If not marked → mark as MISSED
         if (!existing) {
 
           await Progress.create({
@@ -45,4 +44,7 @@ cron.schedule("18 10 * * *", async () => {
     console.log("Auto miss error:", error);
   }
 
+}, {
+  timezone: "Asia/Kolkata"
 });
+
