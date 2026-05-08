@@ -6,7 +6,7 @@ const Progress = require("../models/Progress");
 const sendEmail = require("../utils/sendEmail");
 
 // 🔥  RUN ONCE EVERY DAY AT 8 PM
-cron.schedule("0 20 * * *", async () => {
+cron.schedule("55 8 * * *", async () => {
   console.log("⏰ Running reminder email job...");
 
   try {

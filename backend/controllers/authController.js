@@ -102,29 +102,37 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    // if (!user) {
-    //   return res.status(400).json({ message: "Invalid email or password" });
-    // }
-
-    // ❌ TEMP DISABLED (since all users are verified)
-    
-    if (!user.isVerified) {
-      return res.status(400).json({ message: "Please verify your email first" });
+    // ✅ Check user exists
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
     }
-    
 
+    // ✅ Check password first
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({
+        message: "Invalid email or password",
+      });
     }
 
+    // ✅ Check email verification
+    if (!user.isVerified) {
+      return res.status(400).json({
+        message: "Please verify your email first",
+      });
+    }
+
+    // ✅ Generate token
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
+    // ✅ Send response
     res.json({
       message: "Login successful",
       token,
@@ -132,15 +140,16 @@ const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
 
   } catch (error) {
     console.error("Login Error:", error);
+
     res.status(500).json({
       success: false,
-      message: "Server error"
+      message: "Server error",
     });
   }
 };
