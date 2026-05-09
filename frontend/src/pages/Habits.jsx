@@ -181,12 +181,23 @@ export default function Habits() {
                     {habit.title}
                   </span>
 
-                  <button
+                  {/* <button
                     onClick={() => handleDelete(habit._id)}
                     className="ml-auto bg-red-500 hover:bg-red-600 w-5 h-5 rounded text-xs flex items-center justify-center"
                   >
                     X
-                  </button>
+                  </button> */}
+
+                  <button
+  onClick={() => handleDelete(habit._id)}
+  title="Delete this habit"
+  className="ml-auto bg-red-500 hover:bg-red-600 
+             w-6 h-6 min-w-[24px] min-h-[24px]
+             flex-shrink-0
+             rounded text-xs flex items-center justify-center"
+>
+  X
+</button>
                 </div>
 
                 {/* Days */}
@@ -203,7 +214,7 @@ export default function Habits() {
 
                   let bg = "bg-gray-700";
                   if (status === "done") bg = "bg-green-500";
-                  else if (status === "missed") bg = "bg-orange-400";
+                  else if (status === "missed") bg = "bg-red-500";  // code changed here
 
                   return (
                     <div

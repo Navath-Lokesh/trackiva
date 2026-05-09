@@ -6,7 +6,7 @@ const Progress = require("../models/Progress");
 const sendEmail = require("../utils/sendEmail");
 
 // 🔥  RUN ONCE EVERY DAY AT 8 PM
-cron.schedule("0 20 * * *", async () => {
+cron.schedule("45 21 * * *", async () => {
   console.log("⏰ Running reminder email job...");
 
   try {
@@ -30,34 +30,39 @@ cron.schedule("0 20 * * *", async () => {
         }
       }
 
+      
+      
       const habits = await Habit.find({ userId: user._id });
 
 
       // ------------ User without habits --------------- //
 
-        const day = new Date().getDay();
+        // const day = new Date().getDay();
         // 1 = Monday
        // 4 = Thursday
 
-    if (day !== 1 && day !== 4) {
-    continue;
-    }
+    // if (day !== 1 && day !== 4) {
+    // continue;
+    // }
 
       if (habits.length === 0) {
 
   const day = new Date().getDay();
 
+
+  // this is main code, if we uncomment this mail sent only on monday and thursday 
+
   // Only Monday & Thursday
-  if (day !== 1 && day !== 4) {
-    continue;
-  }
+  // if (day !== 1 && day !== 4) {
+  //   continue;
+  // }
 
   const subject = "Start Your First Habit on Trackiva 🚀";
 
   const html = `
     <h2>Welcome to Trackiva 🚀</h2>
 
-    <p>You created your account, but haven’t added any habits yet.</p>
+    <p>You created your account, but haven't added any habits yet.</p>
 
     <p>Start with just ONE habit today 🔥</p>
   `;
