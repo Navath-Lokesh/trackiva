@@ -84,6 +84,12 @@ export default function Habits() {
     }
   };
 
+
+
+
+  
+
+
   const isFuture = (day) => {
     const selectedDate = new Date(year, month - 1, day);
     const today = new Date();
@@ -116,12 +122,17 @@ export default function Habits() {
           <h1 className="text-lg sm:text-xl font-semibold">Habits</h1>
 
           <div className="flex items-center gap-2">
+
+             
+
+
+
             <h1 className="bg-green-200 rounded text-black px-2 text-sm">
               May
             </h1>
 
             <div className="text-xs sm:text-sm text-gray-400">
-              Total: {habits.length}
+              Total Habits : {habits.length}
             </div>
           </div>
         </div>
@@ -140,6 +151,7 @@ export default function Habits() {
           >
             Add
           </button>
+         
         </div>
 
         {/* Scroll */}
@@ -188,7 +200,7 @@ export default function Habits() {
                     X
                   </button> */}
 
-                  <button
+                  {/* <button
   onClick={() => handleDelete(habit._id)}
   title="Delete this habit"
   className="ml-auto bg-red-500 hover:bg-red-600 
@@ -197,7 +209,36 @@ export default function Habits() {
              rounded text-xs flex items-center justify-center"
 >
   X
-</button>
+</button> */}
+<div className="relative group ml-auto">
+  <button
+    onClick={() => handleDelete(habit._id)}
+    className="bg-red-500 hover:bg-red-600 
+               w-6 h-6 min-w-[24px] min-h-[24px]
+               flex-shrink-0 rounded-md text-xs
+               flex items-center justify-center
+               text-white font-semibold
+               transition-all duration-200
+               hover:scale-110 active:scale-95
+               shadow-sm hover:shadow-red-500/40"
+  >
+    ✕
+  </button>
+
+  {/* Premium Tooltip */}
+  <div
+    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+               opacity-0 group-hover:opacity-100
+               pointer-events-none
+               transition-all duration-150
+               translate-y-1 group-hover:translate-y-0
+               bg-black text-white text-[11px]
+               px-3 py-1.5 rounded-lg whitespace-nowrap
+               shadow-xl border border-gray-700 z-50"
+  >
+    Delete this habit
+  </div>
+</div>
                 </div>
 
                 {/* Days */}

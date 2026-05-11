@@ -17,7 +17,7 @@ const safeParse = (data) => {
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
 const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
-  const [showBugBanner, setShowBugBanner] = useState(true);
+  // const [showBugBanner, setShowBugBanner] = useState(true);
 
   const navigate = useNavigate();
 
@@ -95,7 +95,7 @@ const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
     )}
 
     {/* ✅ BUG FIX BANNER */}
-    {showBugBanner && (
+    {/* {showBugBanner && (
       <div className="w-full bg-red-500/10 border-b border-red-400/30 text-red-300 text-sm flex justify-between items-center px-4 py-2">
         <span>
           <h4>
@@ -113,7 +113,7 @@ const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
           ✕
         </button>
       </div>
-    )}
+    )} */}
 
     {/* MAIN CONTENT */}
     <div className="w-full max-w-screen-xl mx-auto p-4 sm:p-6">

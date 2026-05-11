@@ -73,7 +73,7 @@ export default function Register() {
       >
 
         <h2 className="text-2xl font-bold text-white mb-6 text-center">
-          Create Account 🚀
+          Create Account 
         </h2>
 
         {/* Name */}
