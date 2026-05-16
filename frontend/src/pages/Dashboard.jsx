@@ -16,7 +16,7 @@ const safeParse = (data) => {
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
-const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
+// const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
   // const [showBugBanner, setShowBugBanner] = useState(true);
 
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
   <div className="bg-gray-900 min-h-screen text-white overflow-x-hidden">
 
     {/* ✅ DEVELOPMENT BANNER */}
-    {showDevBanner && (
+    {/* {showDevBanner && (
       <div className="w-full bg-yellow-500/10 border-b border-yellow-400/30 text-yellow-300 text-sm flex justify-between items-center px-4 py-2">
         <span>
           🚧 Trackiva is currently under development.{" "}
@@ -92,7 +92,7 @@ const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
           ✕
         </button>
       </div>
-    )}
+    )} */}
 
     {/* ✅ BUG FIX BANNER */}
     {/* {showBugBanner && (
@@ -200,9 +200,9 @@ const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
             <Heatmap />
           </div>
 
-          <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 w-full">
+          {/* <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 w-full">
             <Chat />
-          </div>
+          </div> */}
 
         </div>
 
