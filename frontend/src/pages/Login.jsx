@@ -33,7 +33,7 @@ export default function Login() {
 
       setTimeout(() => {
         navigate("/dashboard");
-      }, 1500);
+      }, 1000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid email or password ❌");
     } finally {
@@ -59,7 +59,7 @@ export default function Login() {
 
       setTimeout(() => {
         navigate("/dashboard");
-      }, 1500);
+      }, 1000);
     } catch (err) {
       toast.error("Demo login failed ❌");
     } finally {

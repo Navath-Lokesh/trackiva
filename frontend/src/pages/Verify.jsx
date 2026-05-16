@@ -10,7 +10,7 @@ export default function Verify() {
 
     const timer = setTimeout(() => {
       navigate("/");
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);

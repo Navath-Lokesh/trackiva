@@ -119,7 +119,7 @@ export default function Habits() {
 
         {/* Top */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
-          <h1 className="text-lg sm:text-xl font-semibold">Habits</h1>
+          <h1 className="text-lg sm:text-xl font-semibold">Add Habits</h1>
 
           <div className="flex items-center gap-2">
 
@@ -142,7 +142,7 @@ export default function Habits() {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="New habit..."
+            placeholder="Add New Habit..."
             className="bg-gray-700 border border-gray-600 text-white p-2 rounded-lg w-full sm:w-56 outline-none placeholder-gray-400"
           />
           <button
@@ -165,7 +165,7 @@ export default function Habits() {
                 gridTemplateColumns: `120px repeat(${daysInMonth}, minmax(24px, 1fr))`,
               }}
             >
-              <div className="text-gray-300 font-medium">Habit</div>
+              <div className="text-gray-300 font-medium">My Habits</div>
 
               {[...Array(daysInMonth)].map((_, i) => (
                 <div key={i} className="text-center text-xs text-gray-400">
@@ -257,28 +257,58 @@ export default function Habits() {
                   if (status === "done") bg = "bg-green-500";
                   else if (status === "missed") bg = "bg-red-500";  // code changed here
 
+                  // return (
+                  //   <div
+                  //     key={i}
+                  //     onClick={() => {
+                  //       if (future || beforeCreation || status) return;
+                  //       handleClick(habit._id, day);
+                  //     }}
+                  //     className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold mx-auto ${
+                  //       future || beforeCreation
+                  //         ? "bg-gray-600 cursor-not-allowed"
+                  //         : "cursor-pointer"
+                  //     } ${bg}`}
+                  //   >
+                  //     {future || beforeCreation
+                  //       ? "🔒"
+                  //       : status === "done"
+                  //       ? "✔"
+                  //       : status === "missed"
+                  //       ? "✖"
+                  //       : ""}
+                  //   </div>
+                  // );
                   return (
-                    <div
-                      key={i}
-                      onClick={() => {
-                        if (future || beforeCreation || status) return;
-                        handleClick(habit._id, day);
-                      }}
-                      className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold mx-auto ${
-                        future || beforeCreation
-                          ? "bg-gray-600 cursor-not-allowed"
-                          : "cursor-pointer"
-                      } ${bg}`}
-                    >
-                      {future || beforeCreation
-                        ? "🔒"
-                        : status === "done"
-                        ? "✔"
-                        : status === "missed"
-                        ? "✖"
-                        : ""}
-                    </div>
-                  );
+  <div
+    key={i}
+    onClick={() => {
+      if (future || beforeCreation || status) return;
+      handleClick(habit._id, day);
+    }}
+    className={`
+      w-6 h-6 flex items-center justify-center
+      rounded text-[10px] font-bold mx-auto
+      transition-all duration-200
+      hover:scale-110 active:scale-95
+      select-none
+      ${
+        future || beforeCreation
+          ? "bg-gray-600 cursor-not-allowed"
+          : "cursor-pointer hover:ring-2 hover:ring-green-400/40"
+      }
+      ${bg}
+    `}
+  >
+    {future || beforeCreation
+      ? "🔒"
+      : status === "done"
+      ? "✔"
+      : status === "missed"
+      ? "✖"
+      : ""}
+  </div>
+);
                 })}
               </div>
             ))}

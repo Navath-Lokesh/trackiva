@@ -5,6 +5,7 @@ import Habits from "./Habits";
 import Analytics from "./Analytics";
 import Chat from "./Chat";
 import { getAnalytics } from "../api/analyticsApi";
+import QuickGuide from "./quickGuide";
 
 const safeParse = (data) => {
   try {
@@ -14,8 +15,13 @@ const safeParse = (data) => {
   }
 };
 
+
+
+
+
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
+  const [showGuide, setShowGuide] = useState(false);
 // const [showDevBanner, setShowDevBanner] = useState(true);// ✅ banner state
   // const [showBugBanner, setShowBugBanner] = useState(true);
 
@@ -115,6 +121,61 @@ export default function Dashboard() {
       </div>
     )} */}
 
+    {/* // quickGuide */}
+    <button
+  onClick={() => setShowGuide(true)}
+  className="
+  group
+  relative
+  overflow-hidden
+  bg-gradient-to-r from-indigo-600 to-blue-600
+  hover:from-indigo-500 hover:to-blue-500
+  text-white
+  px-5 py-3
+  rounded-2xl
+  shadow-lg shadow-blue-500/20
+  border border-blue-400/20
+  transition-all duration-300
+  hover:scale-105 active:scale-95
+  animate-pulse
+  ml-[960px]
+  "
+>
+
+  {/* Glow Effect */}
+  <div
+    className="
+    absolute inset-0
+    bg-white/10
+    opacity-0 group-hover:opacity-100
+    transition duration-300
+    "
+  />
+
+  <div className="relative flex items-center gap-2">
+
+    <span className="text-lg">
+      🚀
+    </span>
+
+    <div className="flex flex-col items-start leading-tight">
+
+      <span className="text-xs text-blue-100 font-medium">
+        NEW USERS
+      </span>
+
+      <span className="font-semibold text-sm">
+        Must Read Before Tracking
+      </span>
+
+    </div>
+
+  </div>
+
+</button>
+
+
+
     {/* MAIN CONTENT */}
     <div className="w-full max-w-screen-xl mx-auto p-4 sm:p-6">
 
@@ -209,6 +270,10 @@ export default function Dashboard() {
       </div>
 
     </div>
+    <QuickGuide
+  showGuide={showGuide}
+  setShowGuide={setShowGuide}
+/>
   </div>
 );
 }
