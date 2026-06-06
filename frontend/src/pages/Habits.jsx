@@ -128,7 +128,7 @@ export default function Habits() {
 
 
             <h1 className="bg-green-200 rounded text-black px-2 text-sm">
-              May
+              June
             </h1>
 
             <div className="text-xs sm:text-sm text-gray-400">
